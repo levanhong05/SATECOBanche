@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">SATECO Banche</string>
+
+    <string name="action_contruction">Scan contructions</string>
+    <string name="action_information">Informations</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="heightlabel">Hauteur</string>
+    <string name="heightvalue">0</string>
+    <string name="heightunit">cm</string>
+
+    <string name="thicknesslabel">Epaisseur</string>
+    <string name="thicknessvalue">0</string>
+    <string name="thicknessunit">cm</string>
+
+    <string name="niveaulabel">Niveau</string>
+    <string name="niveauvalue">0</string>
+    <string name="niveauunit">°</string>
+
+    <string name="aplomblabel">Aplomb</string>
+    <string name="aplombvalue">0</string>
+    <string name="aplombunit">°</string>
+
+    <string name="pressurelabel">Pression</string>
+    <string name="pressurevalue">0</string>
+    <string name="pressureunit">T</string>
+
+    <string name="tabdistance">Capteur de distance</string>
+    <string name="tabangle">Inclinomètre</string>
+    <string name="tabpressure">Capteur de pression</string>
+</resources>
