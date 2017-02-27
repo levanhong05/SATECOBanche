@@ -28,4 +28,12 @@
     <string name="tabdistance">Capteur de distance</string>
     <string name="tabangle">Inclinomètre</string>
     <string name="tabpressure">Capteur de pression</string>
+
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="nav_desciption">android.studio@android.com</string>
+    <string name="nav_img_desciption">Image description</string>
 </resources>

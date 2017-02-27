@@ -18,9 +18,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".main.BancheActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
         <activity android:name=".PressureLineChartActivity" />
         <activity android:name=".DistanceLineChartActivity" />
-        <activity android:name=".AngleLineChartActivity"></activity>
+        <activity android:name=".AngleLineChartActivity" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyD9hbuwIzfWOUCw55cct8BSpHDI_EDlJtE"/>
+
     </application>
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
 </manifest>

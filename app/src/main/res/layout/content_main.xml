@@ -11,36 +11,12 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.dfm.honglv.satecobanche.main.MainActivity"
-    tools:showIn="@layout/activity_main">
+    tools:showIn="@layout/app_bar_main">
 
-    <TabHost
+    <fragment
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/tabHost">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TabWidget
-                android:id="@android:id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
-
-            </TabWidget>
-
-            <FrameLayout
-                android:id="@android:id/tabcontent"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <include layout="@layout/activity_angle_line_chart" />
-                <include layout="@layout/activity_distance_line_chart" />
-                <include layout="@layout/activity_pressure_line_chart" />
-
-            </FrameLayout>
-        </LinearLayout>
-    </TabHost>
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:id="@+id/map" />
 
 </RelativeLayout>
