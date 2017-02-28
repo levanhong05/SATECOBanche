@@ -36,4 +36,5 @@
 
     <string name="nav_desciption">android.studio@android.com</string>
     <string name="nav_img_desciption">Image description</string>
+    <string name="splash_image_description">splash image</string>
 </resources>

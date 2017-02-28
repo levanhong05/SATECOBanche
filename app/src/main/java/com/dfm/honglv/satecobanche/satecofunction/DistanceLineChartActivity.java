@@ -1,7 +1,9 @@
-package com.dfm.honglv.satecobanche;
+package com.dfm.honglv.satecobanche.satecofunction;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.dfm.honglv.satecobanche.R;
 
 public class DistanceLineChartActivity extends AppCompatActivity {
 

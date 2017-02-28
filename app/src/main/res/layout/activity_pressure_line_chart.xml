@@ -8,13 +8,13 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.dfm.honglv.satecobanche.PressureLineChartActivity">
+    tools:context="com.dfm.honglv.satecobanche.satecofunction.PressureLineChartActivity">
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chartPressure"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/seekBar1"
+        android:layout_above="@+id/pressurelabel"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true" />
 
@@ -59,17 +59,5 @@
         android:layout_toLeftOf="@+id/pressureunit"
         android:layout_toRightOf="@+id/pressurelabel"
         android:layout_alignParentBottom="true" />
-
-    <SeekBar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/seekBar1"
-        android:layout_above="@+id/seekBar2" />
-
-    <SeekBar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/seekBar2"
-        android:layout_above="@+id/pressurelabel" />
 
 </RelativeLayout>

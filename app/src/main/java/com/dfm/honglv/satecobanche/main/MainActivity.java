@@ -1,6 +1,7 @@
 package com.dfm.honglv.satecobanche.main;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -95,10 +96,15 @@ public class MainActivity extends AppCompatActivity
         // Add a marker in Sydney and move the camera
         LatLng paris = new LatLng(48.857708, 2.348928);
 
-        mMap.addMarker(new MarkerOptions().position(paris).title("Marker in Paris"));
+        mMap.addMarker(new MarkerOptions().position(paris).title("Paris"));
+
         mMap.moveCamera(CameraUpdateFactory.newLatLng(paris));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+
         mMap.setOnMarkerDragListener(this);
         mMap.setOnMapLongClickListener(this);
+        mMap.setOnMarkerClickListener(this);
     }
 
     @Override
@@ -157,6 +163,7 @@ public class MainActivity extends AppCompatActivity
     //Getting current location
     private void getCurrentLocation() {
         mMap.clear();
+
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -168,6 +175,7 @@ public class MainActivity extends AppCompatActivity
             return;
         }
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
         if (location != null) {
             //Getting longitude and latitude
             longitude = location.getLongitude();
@@ -185,26 +193,25 @@ public class MainActivity extends AppCompatActivity
          * move the camera with animation
          */
         LatLng latLng = new LatLng(latitude, longitude);
+
         mMap.addMarker(new MarkerOptions()
                 .position(latLng)
                 .draggable(true)
-                .title("Marker in India"));
+                .title("New construction!"));
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         mMap.getUiSettings().setZoomControlsEnabled(true);
-
-
     }
 
     @Override
     public void onClick(View view) {
-        Log.v("","view click event");
+        Toast.makeText(getApplicationContext(), "onViewClick", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        getCurrentLocation();
+        //getCurrentLocation();
     }
 
     @Override
@@ -225,12 +232,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onMarkerDragStart(Marker marker) {
-        Toast.makeText(MainActivity.this, "onMarkerDragStart", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "onMarkerDragStart", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onMarkerDrag(Marker marker) {
-        Toast.makeText(MainActivity.this, "onMarkerDrag", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "onMarkerDrag", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -255,10 +262,11 @@ public class MainActivity extends AppCompatActivity
         super.onStop();
     }
 
-
     @Override
     public boolean onMarkerClick(Marker marker) {
-        Toast.makeText(MainActivity.this, "onMarkerClick", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent("com.dfm.honglv.satecobanche.BancheActivity");
+        startActivity(intent);
+
         return true;
     }
 }

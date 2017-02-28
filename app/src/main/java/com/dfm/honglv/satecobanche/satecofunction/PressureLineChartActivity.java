@@ -1,14 +1,14 @@
-package com.dfm.honglv.satecobanche;
+package com.dfm.honglv.satecobanche.satecofunction;
 
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dfm.honglv.satecobanche.R;
 import com.dfm.honglv.satecobanche.main.ChartBase;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -26,13 +26,10 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PressureLineChartActivity extends ChartBase implements SeekBar.OnSeekBarChangeListener,
-        OnChartValueSelectedListener {
+public class PressureLineChartActivity extends ChartBase implements OnChartValueSelectedListener {
 
     private LineChart mChart;
     private TextView value;
-
-    private SeekBar mSeekBarX, mSeekBarY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,14 +37,6 @@ public class PressureLineChartActivity extends ChartBase implements SeekBar.OnSe
         setContentView(R.layout.content_banche);
 
         value = (TextView) findViewById(R.id.pressurevalue);
-        mSeekBarX = (SeekBar) findViewById(R.id.seekBar1);
-        mSeekBarY = (SeekBar) findViewById(R.id.seekBar2);
-
-        mSeekBarX.setProgress(45);
-        mSeekBarY.setProgress(100);
-
-        mSeekBarY.setOnSeekBarChangeListener(this);
-        mSeekBarX.setOnSeekBarChangeListener(this);
 
         mChart = (LineChart) findViewById(R.id.chartPressure);
         mChart.setOnChartValueSelectedListener(this);
@@ -253,18 +242,6 @@ public class PressureLineChartActivity extends ChartBase implements SeekBar.OnSe
         return true;
     }
 
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-        value.setText("" + (mSeekBarX.getProgress() + 1));
-        //tvY.setText("" + (mSeekBarY.getProgress()));
-
-        setData(mSeekBarX.getProgress() + 1, mSeekBarY.getProgress());
-
-        // redraw
-        mChart.invalidate();
-    }
-
     private void setData(int count, float range) {
 
         ArrayList<Entry> yVals1 = new ArrayList<Entry>();
@@ -326,17 +303,5 @@ public class PressureLineChartActivity extends ChartBase implements SeekBar.OnSe
     @Override
     public void onNothingSelected() {
         Log.i("Nothing selected", "Nothing selected.");
-    }
-
-    @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-        // TODO Auto-generated method stub
-
     }
 }
