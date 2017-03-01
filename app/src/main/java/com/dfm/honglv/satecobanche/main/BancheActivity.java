@@ -1,8 +1,8 @@
 package com.dfm.honglv.satecobanche.main;
 
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 
 import android.os.Handler;
 import android.util.Log;
@@ -10,6 +10,10 @@ import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.dfm.honglv.satecobanche.R;
+
+import com.dfm.honglv.satecobanche.adapter.DataAdapter;
+import com.dfm.honglv.satecobanche.adapter.MessageCallback;
+import com.dfm.honglv.satecobanche.adapter.TCPClient;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -37,6 +41,11 @@ public class BancheActivity extends ChartBase implements OnChartValueSelectedLis
     ArrayList<Entry> pressureValue;
 
     private int mTime = 0;
+
+    private DataAdapter mAdapter;
+    private TCPClient mTcpClient;
+
+    private ArrayList<String> arrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +75,14 @@ public class BancheActivity extends ChartBase implements OnChartValueSelectedLis
 
         mTabHost.setCurrentTab(2);
 
+        arrayList = new ArrayList<String>();
+
+        mAdapter = new DataAdapter(this, arrayList);
+
         setupCharts();
+
+        // connect to the server
+        new ConnectTask().execute("");
 
         final Handler handler = new Handler();
         Timer timer = new Timer(true);
@@ -195,5 +211,31 @@ public class BancheActivity extends ChartBase implements OnChartValueSelectedLis
     @Override
     public void onNothingSelected() {
         Log.i("Nothing selected", "Nothing selected.");
+    }
+
+    public class ConnectTask extends AsyncTask<String, String, TCPClient> {
+        @Override
+        protected TCPClient doInBackground(String... message) {
+            //we create a TCPClient object and
+            mTcpClient = new TCPClient("", new MessageCallback() {
+                @Override
+                public void callbackMessageReceiver(String message) {
+                    publishProgress(message);
+                }
+            });
+            mTcpClient.run();
+
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+
+            Log.d("onProgressUpdate", "In progress update, values: " + values.toString());
+            // notify the adapter that the data set has changed. This means that new message received
+            // from server was added to the list
+            mAdapter.notifyDataSetChanged();
+        }
     }
 }

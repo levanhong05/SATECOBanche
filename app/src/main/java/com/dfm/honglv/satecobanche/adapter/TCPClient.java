@@ -29,12 +29,11 @@ public class TCPClient {
     /**
      ** TCPClient class constructor, which is created in AsyncTasks after the button click.
      * @param command  Command passed as an argument, e.g. "shutdown -r" for restarting computer
-     * @param ipNumber String retrieved from IpGetter class that is looking for ip number.
      * @param listener Callback interface object
     */
-    public TCPClient(String command, String ipNumber, MessageCallback listener) {
-        this.listener         = listener;
-        this.command          = command ;
+    public TCPClient(String command, MessageCallback listener) {
+        this.listener = listener;
+        this.command = command ;
     }
 
     /**

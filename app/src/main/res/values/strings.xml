@@ -5,6 +5,9 @@
     <string name="action_information">Informations</string>
     <string name="action_settings">Settings</string>
 
+    <string name="action_add_contruction">Add new contruction</string>
+    <string name="action_add_banche">Add new banche</string>
+
     <string name="heightlabel">Hauteur</string>
     <string name="heightvalue">0</string>
     <string name="heightunit">cm</string>

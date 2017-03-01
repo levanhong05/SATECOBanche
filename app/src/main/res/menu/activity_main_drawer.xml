@@ -7,6 +7,14 @@
             android:icon="@drawable/ic_menu_scan"
             android:title="@string/action_contruction" />
         <item
+            android:id="@+id/nav_add_contruction"
+            android:title="@string/action_add_contruction"
+            android:icon="@drawable/ic_menu_plus_circle" />
+        <item
+            android:id="@+id/nav_add_banche"
+            android:title="@string/action_add_banche"
+            android:icon="@drawable/ic_menu_plus_circle" />
+        <item
             android:id="@+id/nav_infos"
             android:icon="@drawable/ic_menu_information"
             android:title="@string/action_information" />

@@ -1,16 +1,12 @@
 package com.dfm.honglv.satecobanche.main;
 
-import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,11 +14,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.dfm.honglv.satecobanche.R;
+
+import android.support.design.widget.FloatingActionButton;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -51,21 +49,19 @@ public class MainActivity extends AppCompatActivity
     private double longitude;
     private double latitude;
 
+    private FloatingActionButton fabAdd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        fabAdd = (FloatingActionButton) findViewById(R.id.fab);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        fabAdd.setOnClickListener(clickListener);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -85,7 +81,27 @@ public class MainActivity extends AppCompatActivity
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-}
+    }
+
+    private View.OnClickListener clickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            PopupMenu popup = new PopupMenu(MainActivity.this, v);
+
+            popup.getMenuInflater().inflate(R.menu.add_menu, popup.getMenu());
+
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                public boolean onMenuItemClick(MenuItem item) {
+                    Toast.makeText(MainActivity.this,
+                            "Clicked popup menu item " + item.getTitle(),
+                            Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            });
+
+            popup.show();
+        }
+    };
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -125,6 +141,18 @@ public class MainActivity extends AppCompatActivity
         switch (id) {
             case R.id.nav_scan: {
                 Toast.makeText(getApplicationContext(), "Scan contructions!",
+                        Toast.LENGTH_SHORT).show();
+                break;
+            }
+
+            case R.id.nav_add_contruction: {
+                Toast.makeText(getApplicationContext(), "Add new contruction!",
+                        Toast.LENGTH_SHORT).show();
+                break;
+            }
+
+            case R.id.nav_add_banche: {
+                Toast.makeText(getApplicationContext(), "Add new banche!",
                         Toast.LENGTH_SHORT).show();
                 break;
             }
