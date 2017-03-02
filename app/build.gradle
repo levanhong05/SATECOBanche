@@ -37,4 +37,5 @@ dependencies {
     compile 'com.google.android.gms:play-services:10.2.0'
     compile 'com.j256.ormlite:ormlite-android:5.0'
     compile 'com.j256.ormlite:ormlite-android:5.0'
+    compile project(':usbSerialForAndroid')
 }

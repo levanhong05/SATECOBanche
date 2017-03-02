@@ -16,6 +16,8 @@
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
+    <uses-feature android:name="android.hardware.usb.host" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -56,9 +58,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".satecofunction.PressureLineChartActivity" />
-        <activity android:name=".satecofunction.DistanceLineChartActivity" />
-        <activity android:name=".satecofunction.AngleLineChartActivity" />
+        <activity android:name=".widgets.PressureLineChartActivity" />
+        <activity android:name=".widgets.DistanceLineChartActivity" />
+        <activity android:name=".widgets.AngleLineChartActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

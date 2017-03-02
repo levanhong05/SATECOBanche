@@ -1,4 +1,4 @@
-package com.dfm.honglv.satecobanche.satecofunction;
+package com.dfm.honglv.satecobanche.widgets;
 
 import android.graphics.Color;
 import android.os.Bundle;

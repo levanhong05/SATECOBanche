@@ -1,33 +1,40 @@
 package com.dfm.honglv.satecobanche.main;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbDeviceConnection;
+import android.hardware.usb.UsbManager;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.view.View;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.dfm.honglv.satecobanche.R;
-
-import android.support.design.widget.FloatingActionButton;
-
-import com.dfm.honglv.satecobanche.data.BancheDetails;
 import com.dfm.honglv.satecobanche.data.ConstructionDetails;
 import com.dfm.honglv.satecobanche.data.DatabaseHelper;
 import com.dfm.honglv.satecobanche.navigation.ConstructionAddActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -35,15 +42,20 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.location.LocationServices;
+import com.hoho.android.usbserial.driver.UsbSerialDriver;
+import com.hoho.android.usbserial.driver.UsbSerialPort;
+import com.hoho.android.usbserial.driver.UsbSerialProber;
+import com.hoho.android.usbserial.util.HexDump;
+import com.hoho.android.usbserial.util.SerialInputOutputManager;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.PreparedQuery;
-import com.j256.ormlite.stmt.QueryBuilder;
 
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -63,6 +75,49 @@ public class MainActivity extends AppCompatActivity
 
     private FloatingActionButton fabAdd;
 
+    private static final int MESSAGE_REFRESH = 101;
+    private static final int MESSAGE_SEND = 102;
+    private static final int MESSAGE_RECEIVED = 103;
+
+    private static final long REFRESH_TIMEOUT_MILLIS = 10000;
+    private static final long REFRESH_DATA_TIMEOUT_MILLIS = 25000;
+
+    private final Handler mDeviceHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_REFRESH:
+                    onScanDeviceList();
+                    mDeviceHandler.sendEmptyMessageDelayed(MESSAGE_REFRESH, REFRESH_TIMEOUT_MILLIS);
+                    break;
+                default:
+                    super.handleMessage(msg);
+                    break;
+            }
+        }
+
+    };
+
+    private final Handler mDataHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_SEND:
+                    onSendData();
+                    mDataHandler.sendEmptyMessageDelayed(MESSAGE_SEND, REFRESH_DATA_TIMEOUT_MILLIS);
+                    break;
+                case MESSAGE_RECEIVED:
+                    onReceivedData();
+                    mDataHandler.sendEmptyMessageDelayed(MESSAGE_RECEIVED, REFRESH_DATA_TIMEOUT_MILLIS);
+                    break;
+                default:
+                    super.handleMessage(msg);
+                    break;
+            }
+        }
+
+    };
+
     // Reference of DatabaseHelper class to access its DAOs and other components
     private DatabaseHelper databaseHelper = null;
 
@@ -71,6 +126,30 @@ public class MainActivity extends AppCompatActivity
 
     // It holds the list of ConstructionDetails object fetched from Database
     private List<ConstructionDetails> constructionList;
+
+    private List<UsbSerialPort> mEntries = new ArrayList<UsbSerialPort>();
+
+    private UsbManager mUsbManager;
+
+    private static UsbSerialPort mPort = null;
+
+    private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
+
+    private SerialInputOutputManager mSerialIoManager;
+
+    private final SerialInputOutputManager.Listener mListener =
+            new SerialInputOutputManager.Listener() {
+
+                @Override
+                public void onRunError(Exception e) {
+                    Log.d("SATECO", "Runner stopped.");
+                }
+
+                @Override
+                public void onNewData(final byte[] data) {
+
+                }
+            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +181,155 @@ public class MainActivity extends AppCompatActivity
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+
+        mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+    }
+
+    private void onScanDeviceList() {
+        new AsyncTask<Void, Void, List<UsbSerialPort>>() {
+            @Override
+            protected List<UsbSerialPort> doInBackground(Void... params) {
+                SystemClock.sleep(1000);
+
+                final List<UsbSerialDriver> drivers = UsbSerialProber.getDefaultProber().findAllDrivers(mUsbManager);
+
+                final List<UsbSerialPort> result = new ArrayList<UsbSerialPort>();
+                for (final UsbSerialDriver driver : drivers) {
+                    final List<UsbSerialPort> ports = driver.getPorts();
+                    result.addAll(ports);
+                }
+
+                return result;
+            }
+
+            @Override
+            protected void onPostExecute(List<UsbSerialPort> result) {
+                mEntries.clear();
+                mEntries.addAll(result);
+
+                if (mEntries.size() == 0) {
+                    Toast.makeText(MainActivity.this, "RF device not found!!!", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (mPort != mEntries.get(0)) {
+                        mPort = mEntries.get(0);
+                    }
+
+                    final UsbSerialDriver driver = mPort.getDriver();
+                    final UsbDevice device = driver.getDevice();
+
+                    final String title = String.format("Vendor %s Product %s",
+                            HexDump.toHexString((short) device.getVendorId()),
+                            HexDump.toHexString((short) device.getProductId()));
+
+                    final UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+
+                    UsbDeviceConnection connection = usbManager.openDevice(mPort.getDriver().getDevice());
+
+                    if (connection == null) {
+                        Log.d("SATECO", "Opening device failed");
+                        return;
+                    }
+
+                    try {
+                        mPort.open(connection);
+                        mPort.setParameters(UsbSerialPort.BAUDRATE_9600, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
+                    } catch (IOException e) {
+                        Log.e("SATECO", "Error setting up device: " + e.getMessage(), e);
+                        try {
+                            mPort.close();
+                        } catch (IOException e2) {
+                            // Ignore.
+                        }
+                        mPort = null;
+                        return;
+                    }
+
+                    Toast.makeText(MainActivity.this, String.format("%s device(s) found %s",Integer.valueOf(mEntries.size()), title), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }.execute((Void) null);
+    }
+
+    private void onSendData() {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                SystemClock.sleep(1000);
+                Log.d("onSendData", "doInBackground onSendData");
+
+                String text = "Hello...";
+
+                return text;
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                try {
+                    Log.d("onSendData", "onPostExecute onSendData");
+                    if (mPort != null) {
+                        //final UsbSerialPort sPort = mEntries.get(0);
+                        byte[] bytes = result.getBytes("UTF-8");
+                        mPort.write(bytes, 1000);
+
+                        Toast.makeText(MainActivity.this, String.format("Send data: %s", result), Toast.LENGTH_SHORT).show();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.execute((Void) null);
+    }
+
+    private void onReceivedData() {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                SystemClock.sleep(1000);
+
+                String strData = "";
+
+
+                return strData;
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                try {
+                    if (mPort != null) {
+                        //final UsbSerialPort sPort = mEntries.get(0);
+                        byte data[] = new byte[1000];
+                        mPort.read(data, 1000);
+
+                        result = new String(data);
+
+                        Toast.makeText(MainActivity.this, String.format("Received data: %s", result), Toast.LENGTH_SHORT).show();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.execute((Void) null);
+    }
+
+    private void stopIoManager() {
+        if (mSerialIoManager != null) {
+            Log.i("SATECO", "Stopping io manager ..");
+            mSerialIoManager.stop();
+            mSerialIoManager = null;
+        }
+    }
+
+    private void startIoManager() {
+        if (mPort != null) {
+            Log.i("SATECO", "Starting io manager ..");
+            mSerialIoManager = new SerialInputOutputManager(mPort, mListener);
+            mExecutor.submit(mSerialIoManager);
+        }
+    }
+
+    private void onDeviceStateChange() {
+        stopIoManager();
+        startIoManager();
     }
 
     private View.OnClickListener clickListener = new View.OnClickListener() {
@@ -282,6 +510,65 @@ public class MainActivity extends AppCompatActivity
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         mMap.getUiSettings().setZoomControlsEnabled(true);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mDeviceHandler.sendEmptyMessage(MESSAGE_REFRESH);
+        mDataHandler.sendEmptyMessage(MESSAGE_SEND);
+        mDataHandler.sendEmptyMessage(MESSAGE_RECEIVED);
+
+        Log.d("SATECO", "Resumed, port=" + mPort);
+
+        if (mPort == null) {
+            Log.d("SATECO", "No serial device.");
+        } else {
+            final UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+
+            UsbDeviceConnection connection = usbManager.openDevice(mPort.getDriver().getDevice());
+            if (connection == null) {
+                Log.d("SATECO", "Opening device failed");
+                return;
+            }
+
+            try {
+                mPort.open(connection);
+                mPort.setParameters(UsbSerialPort.BAUDRATE_9600, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
+            } catch (IOException e) {
+                Log.e("SATECO", "Error setting up device: " + e.getMessage(), e);
+                try {
+                    mPort.close();
+                } catch (IOException e2) {
+                    // Ignore.
+                }
+                mPort = null;
+                return;
+            }
+        }
+
+        onDeviceStateChange();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        mDeviceHandler.removeMessages(MESSAGE_REFRESH);
+        mDataHandler.removeMessages(MESSAGE_SEND);
+        mDataHandler.removeMessages(MESSAGE_RECEIVED);
+
+        stopIoManager();
+        if (mPort != null) {
+            try {
+                mPort.close();
+            } catch (IOException e) {
+                // Ignore.
+            }
+            mPort = null;
+        }
+        finish();
     }
 
     @Override
