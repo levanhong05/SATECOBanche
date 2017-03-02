@@ -17,7 +17,7 @@ import java.sql.SQLException;
  */
 
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
-    private static final String DATABASE_NAME = "studentdir.db";
+    private static final String DATABASE_NAME = "sateco.db";
     private static final int DATABASE_VERSION = 1;
 
     private Dao<ConstructionDetails, Integer> mContructionDao;

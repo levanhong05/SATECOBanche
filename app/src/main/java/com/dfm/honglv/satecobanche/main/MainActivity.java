@@ -22,6 +22,10 @@ import com.dfm.honglv.satecobanche.R;
 
 import android.support.design.widget.FloatingActionButton;
 
+import com.dfm.honglv.satecobanche.data.BancheDetails;
+import com.dfm.honglv.satecobanche.data.ConstructionDetails;
+import com.dfm.honglv.satecobanche.data.DatabaseHelper;
+import com.dfm.honglv.satecobanche.navigation.ConstructionAddActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,6 +36,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.location.LocationServices;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.QueryBuilder;
+
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -50,6 +62,15 @@ public class MainActivity extends AppCompatActivity
     private double latitude;
 
     private FloatingActionButton fabAdd;
+
+    // Reference of DatabaseHelper class to access its DAOs and other components
+    private DatabaseHelper databaseHelper = null;
+
+    // Declaration of DAO to interact with corresponding table
+    private Dao<ConstructionDetails, Integer> constructionDao;
+
+    // It holds the list of ConstructionDetails object fetched from Database
+    private List<ConstructionDetails> constructionList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,18 +124,49 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+    // This is how, DatabaseHelper can be initialized for future use
+    private DatabaseHelper getHelper() {
+        if (databaseHelper == null) {
+            databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+        }
+        return databaseHelper;
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-        // Add a marker in Sydney and move the camera
-        LatLng paris = new LatLng(48.857708, 2.348928);
+        boolean isMarked = false;
 
-        mMap.addMarker(new MarkerOptions().position(paris).title("Paris"));
+        try {
+            // This is how, a reference of DAO object can be done
+            constructionDao = getHelper().getConstructionDao();
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(paris));
+            // Query the database. We need all the records so, used queryForAll()
+            constructionList = constructionDao.queryForAll();
+
+            // Iterate through the BancheDetails object iterator and populate the comma separated String
+            for (ConstructionDetails construction : constructionList) {
+                LatLng latLg = new LatLng(construction.latitude, construction.longitude);
+                mMap.addMarker(new MarkerOptions().position(latLg).title(construction.constructionName));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLg));
+
+                isMarked = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if (!isMarked) {
+            // Add a marker in Sydney and move the camera
+            LatLng paris = new LatLng(48.857708, 2.348928);
+
+            mMap.addMarker(new MarkerOptions().position(paris).title("Paris"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(paris));
+        }
+
         mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
@@ -256,6 +308,11 @@ public class MainActivity extends AppCompatActivity
     public void onMapLongClick(LatLng latLng) {
         // mMap.clear();
         mMap.addMarker(new MarkerOptions().position(latLng).draggable(true));
+
+        Intent intent = new Intent(MainActivity.this, ConstructionAddActivity.class);
+        startActivity(intent);
+        intent.putExtra("latitude", latLng.latitude);
+        intent.putExtra("longitude", latLng.longitude);
     }
 
     @Override

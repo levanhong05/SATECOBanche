@@ -15,16 +15,13 @@ public class DataDetails implements Serializable {
      */
     private static final long serialVersionUID = -222864131214757024L;
 
-    public static final String ID_FIELD = "chip_id";
-    public static final String BANCHE_ID_FIELD = "banche_id";
+    public static final String ID_FIELD = "data_id";
+    public static final String CHIP_ID_FIELD = "chip_id";
 
     // Primary key defined as an auto generated integer
     // If the database table column name differs than the Model class variable name, the way to map to use columnName
     @DatabaseField(generatedId = true, columnName = ID_FIELD)
-    public int chipId;
-
-    @DatabaseField(columnName = "banche_id")
-    public int bancheId;
+    public int dataId;
 
     @DatabaseField(columnName = "key")
     public String key;
@@ -33,8 +30,8 @@ public class DataDetails implements Serializable {
     public String value;
 
     // Foreign key defined to hold associations
-    @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
-    public BancheDetails banche;
+    @DatabaseField(canBeNull = false, foreign = true)
+    public ChipDetails chip;
 
     // Define a String type field to hold student's date of insertion
     @DatabaseField(columnName = "added_date")
@@ -46,9 +43,10 @@ public class DataDetails implements Serializable {
     }
 
     //For our own purpose, so it's easier to create a StudentDetails object
-    public DataDetails(final String key, final String value, BancheDetails banche){
+    public DataDetails(final String key, final String value, ChipDetails chip){
+        this.addedDate = new Date();
         this.key = key;
         this.value = value;
-        this.banche = banche;
+        this.chip = chip;
     }
 }

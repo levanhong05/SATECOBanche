@@ -19,21 +19,25 @@ public class ConstructionDetails implements Serializable {
     @DatabaseField(generatedId = true, columnName = "construction_id")
     public int constructionId;
 
-    // Define a String type field to hold teacher's name
     @DatabaseField(columnName = "construction_name")
     public String constructionName;
 
     // Define a String type field to hold student's address
-    public String address;
+    @DatabaseField(columnName = "latitude")
+    public double latitude;
+
+    @DatabaseField(columnName = "longitude")
+    public double longitude;
 
     // Default constructor is needed for the SQLite, so make sure you also have it
     public ConstructionDetails(){
 
     }
 
-    //For our own purpose, so it's easier to create a TeacherDetails object
-    public ConstructionDetails(final String name, final String address){
+    //For our own purpose, so it's easier to create a ConstructionDetails object
+    public ConstructionDetails(final String name, final double latitude, final double longitude){
         this.constructionName = name;
-        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 }
