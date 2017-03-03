@@ -37,7 +37,7 @@ public class USBService extends Service {
     public static final int CTS_CHANGE = 1;
     public static final int DSR_CHANGE = 2;
     public static final int SYNC_READ = 3;
-    private static final String ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION";
+    private static final String ACTION_USB_PERMISSION = "com.android.usb.permission.USB_PERMISSION";
     private static final int BAUD_RATE = 9600; // BaudRate. Change this value if you need
     public static boolean SERVICE_CONNECTED = false;
 
@@ -52,7 +52,6 @@ public class USBService extends Service {
 
     private boolean serialPortConnected;
 
-    private String dataReceived = "";
     /*
      *  Data received from serial port will be received here. Just populate onReceivedData with your code
      *  In this particular example. byte stream is converted to String and send to UI thread to
@@ -64,13 +63,7 @@ public class USBService extends Service {
             try {
                 String data = new String(arg0, "UTF-8");
                 if (mHandler != null) {
-                    if (!data.equals("\n") && !data.equals("\r")) {
-                        dataReceived += data;
-                    } else {
-                        mHandler.obtainMessage(MESSAGE_FROM_SERIAL_PORT, dataReceived).sendToTarget();
-
-                        dataReceived = "";
-                    }
+                    mHandler.obtainMessage(SYNC_READ, data).sendToTarget();
                 }
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -301,8 +294,6 @@ public class USBService extends Service {
     }
 
     private class ReadThread extends Thread {
-        private String dataReceived = "";
-
         @Override
         public void run() {
             while (true) {
@@ -314,12 +305,7 @@ public class USBService extends Service {
                     System.arraycopy(buffer, 0, received, 0, n);
                     String receivedStr = new String(received);
 
-                    if (!receivedStr.equals("\n") && !receivedStr.equals("\r")) {
-                        dataReceived += receivedStr;
-                    } else {
-                        mHandler.obtainMessage(SYNC_READ, dataReceived).sendToTarget();
-                        dataReceived = "";
-                    }
+                    mHandler.obtainMessage(SYNC_READ, receivedStr).sendToTarget();
                 }
             }
         }

@@ -157,8 +157,8 @@ public class MainActivity extends AppCompatActivity
             switch (msg.what) {
                 case USBService.MESSAGE_FROM_SERIAL_PORT:
                     String data = (String) msg.obj;
-                    Log.d("", String.format("Received data: %s", data));
-                    Toast.makeText(mActivity.get(), String.format("Received data: %s", data), Toast.LENGTH_SHORT).show();
+                    Log.d("", String.format("R: %s", data));
+                    Toast.makeText(mActivity.get(), String.format("R: %s", data), Toast.LENGTH_SHORT).show();
                     //mActivity.get().display.append(data);
                     break;
                 case USBService.CTS_CHANGE:
@@ -169,8 +169,8 @@ public class MainActivity extends AppCompatActivity
                     break;
                 case USBService.SYNC_READ:
                     String buffer = (String) msg.obj;
-                    Log.d("", String.format("Received data: %s", buffer));
-                    Toast.makeText(mActivity.get(), String.format("Received data: %s", buffer), Toast.LENGTH_SHORT).show();
+                    Log.d("", String.format("RS: %s", buffer));
+                    Toast.makeText(mActivity.get(), String.format("RS: %s", buffer), Toast.LENGTH_SHORT).show();
                     //mActivity.get().display.append(buffer);
                     break;
             }
@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity
 
                     usbService.write(result.getBytes());
 
-                    Toast.makeText(MainActivity.this, String.format("Send: %s", result), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, String.format("S: %s", result), Toast.LENGTH_SHORT).show();
                 }
             }
         }.execute((Void) null);
