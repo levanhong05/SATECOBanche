@@ -34,6 +34,8 @@ import com.dfm.honglv.satecobanche.R;
 import com.dfm.honglv.satecobanche.databases.ConstructionDetails;
 import com.dfm.honglv.satecobanche.databases.DatabaseHelper;
 import com.dfm.honglv.satecobanche.navigation.ConstructionAddActivity;
+import com.dfm.honglv.satecobanche.navigation.InformationActivity;
+import com.dfm.honglv.satecobanche.navigation.SettingsActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -321,14 +323,14 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.nav_scan: {
-                Toast.makeText(getApplicationContext(), "Scan contructions!",
+            case R.id.nav_sync: {
+                Toast.makeText(getApplicationContext(), "Sync data!",
                         Toast.LENGTH_SHORT).show();
                 break;
             }
 
             case R.id.nav_add_contruction: {
-                Toast.makeText(getApplicationContext(), "Add new contruction!",
+                Toast.makeText(getApplicationContext(), "Add new construction!",
                         Toast.LENGTH_SHORT).show();
                 break;
             }
@@ -340,26 +342,21 @@ public class MainActivity extends AppCompatActivity
             }
 
             case R.id.nav_infos: {
-                Toast.makeText(getApplicationContext(), "Informations!",
+                Toast.makeText(getApplicationContext(), "Information!",
                         Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(MainActivity.this, InformationActivity.class);
+                startActivity(intent);
                 break;
             }
 
             case R.id.nav_settings: {
                 Toast.makeText(getApplicationContext(), "Settings!",
                         Toast.LENGTH_SHORT).show();
-                break;
-            }
 
-            case R.id.nav_share: {
-                Toast.makeText(getApplicationContext(), "Share!",
-                        Toast.LENGTH_SHORT).show();
-                break;
-            }
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
 
-            case R.id.nav_send: {
-                Toast.makeText(getApplicationContext(), "Sends!",
-                        Toast.LENGTH_SHORT).show();
                 break;
             }
         }
@@ -503,7 +500,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onMarkerDragEnd(Marker marker) {
-        // getting the Co-ordinates
+        // getting the Coordinates
         latitude = marker.getPosition().latitude;
         longitude = marker.getPosition().longitude;
 

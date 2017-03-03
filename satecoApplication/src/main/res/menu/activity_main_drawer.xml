@@ -3,10 +3,6 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_scan"
-            android:icon="@drawable/ic_menu_scan"
-            android:title="@string/action_contruction" />
-        <item
             android:id="@+id/nav_add_contruction"
             android:title="@string/action_add_contruction"
             android:icon="@drawable/ic_menu_plus_circle" />
@@ -14,6 +10,10 @@
             android:id="@+id/nav_add_banche"
             android:title="@string/action_add_banche"
             android:icon="@drawable/ic_menu_plus_circle" />
+        <item
+            android:id="@+id/nav_sync"
+            android:icon="@drawable/ic_menu_scan"
+            android:title="@string/action_sync" />
         <item
             android:id="@+id/nav_infos"
             android:icon="@drawable/ic_menu_information"
@@ -23,17 +23,5 @@
             android:icon="@drawable/ic_menu_manage"
             android:title="@string/action_settings" />
 
-    </group><item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
-        </menu>
-    </item>
-
+    </group>
 </menu>
