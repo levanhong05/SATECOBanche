@@ -80,9 +80,20 @@
 
         <activity
             android:name=".navigation.SettingsActivity"
-            android:label="@string/title_activity_settings" />
+            android:parentActivityName="com.dfm.honglv.satecobanche.main.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.dfm.honglv.satecobanche.main.MainActivity" />
+        </activity>
+
         <activity android:name=".main.ChooseBancheActivity" />
-        <activity android:name=".navigation.InformationActivity"></activity>
+        <activity
+            android:name=".navigation.InformationActivity"
+            android:parentActivityName="com.dfm.honglv.satecobanche.main.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.dfm.honglv.satecobanche.main.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

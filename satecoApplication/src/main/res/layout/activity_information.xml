@@ -1,54 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_information"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.dfm.honglv.satecobanche.navigation.InformationActivity">
+    android:layout_height="match_parent">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/sateco"
-        android:layout_alignParentTop="true"
-        android:id="@+id/imageLogo"
-        android:layout_centerHorizontal="true"
-        android:cropToPadding="false"
-        android:adjustViewBounds="false"
-        android:scaleType="matrix" />
-
-    <LinearLayout
-        android:orientation="vertical"
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/imageLogo">
+        app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior">
 
-        <TextView
-            android:text="SATECO Banche"
+        <RelativeLayout
+            android:id="@+id/activity_information"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/txtTitle"
-            android:gravity="center_horizontal"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textSize="36sp" />
+            android:layout_height="match_parent"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            tools:context="com.dfm.honglv.satecobanche.navigation.InformationActivity">
 
-        <TextView
-            android:text="Version 1.0.0"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/txtVersion"
-            android:gravity="center_horizontal" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/sateco"
+                android:layout_alignParentTop="true"
+                android:id="@+id/imageLogo"
+                android:layout_centerHorizontal="true"
+                android:cropToPadding="false"
+                android:adjustViewBounds="false"
+                android:scaleType="matrix" />
 
-        <TextView
-            android:text="© 2017 DFM-Engineering Ltd."
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/txtCompany"
-            android:gravity="center_horizontal" />
-    </LinearLayout>
-</RelativeLayout>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/imageLogo">
+
+                <TextView
+                    android:text="SATECO Banche"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txtTitle"
+                    android:gravity="center_horizontal"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    android:textSize="36sp" />
+
+                <TextView
+                    android:text="Version 1.0.0"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txtVersion"
+                    android:gravity="center_horizontal" />
+
+                <TextView
+                    android:text="© 2017 DFM-Engineering Ltd."
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txtCompany"
+                    android:gravity="center_horizontal" />
+            </LinearLayout>
+        </RelativeLayout>
+    </android.support.v4.widget.NestedScrollView>
+</android.support.design.widget.CoordinatorLayout>

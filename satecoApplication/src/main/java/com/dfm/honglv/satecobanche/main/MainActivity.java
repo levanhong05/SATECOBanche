@@ -483,9 +483,11 @@ public class MainActivity extends AppCompatActivity
         mMap.addMarker(new MarkerOptions().position(latLng).draggable(true));
 
         Intent intent = new Intent(MainActivity.this, ConstructionAddActivity.class);
-        startActivity(intent);
+
         intent.putExtra("latitude", latLng.latitude);
         intent.putExtra("longitude", latLng.longitude);
+
+        startActivity(intent);
     }
 
     @Override
@@ -522,7 +524,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        Intent intent = new Intent("com.dfm.honglv.satecobanche.BancheActivity");
+        Intent intent = new Intent(MainActivity.this, ChooseBancheActivity.class);
+
+        intent.putExtra("constructionName", marker.getTitle());
+        intent.putExtra("latitude", marker.getPosition().latitude);
+        intent.putExtra("longitude", marker.getPosition().longitude);
+
         startActivity(intent);
 
         return true;
