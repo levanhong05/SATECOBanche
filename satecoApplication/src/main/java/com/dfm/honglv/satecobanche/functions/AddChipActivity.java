@@ -1,12 +1,22 @@
 package com.dfm.honglv.satecobanche.functions;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.View;
 
 import com.dfm.honglv.satecobanche.R;
+import com.dfm.honglv.satecobanche.databases.DatabaseHelper;
+import com.dfm.honglv.satecobanche.databases.FormworkDetails;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.Dao;
 
-public class AddChipActivity extends AppCompatActivity {
+import java.sql.SQLException;
+
+public class AddChipActivity extends Activity implements View.OnClickListener {
+
+    // Reference of DatabaseHelper class to access its DAOs and other components
+    private DatabaseHelper databaseHelper = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,5 +27,30 @@ public class AddChipActivity extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 
         getWindow().setLayout((int)(dm.widthPixels * 0.9), (int)(dm.heightPixels * 0.4));
+    }
+
+    // This is how, DatabaseHelper can be initialized for future use
+    private DatabaseHelper getHelper() {
+        if (databaseHelper == null) {
+            databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+        }
+        return databaseHelper;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        /*
+         *  * You'll need this in your class to release the helper when done.
+         *  */
+        if (databaseHelper != null) {
+            OpenHelperManager.releaseHelper();
+            databaseHelper = null;
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 }

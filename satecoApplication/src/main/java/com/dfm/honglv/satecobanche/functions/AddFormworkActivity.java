@@ -14,9 +14,6 @@ import com.dfm.honglv.satecobanche.R;
 import com.dfm.honglv.satecobanche.databases.ConstructionDetails;
 import com.dfm.honglv.satecobanche.databases.DatabaseHelper;
 import com.dfm.honglv.satecobanche.databases.FormworkDetails;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 
@@ -24,7 +21,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddFormworkActivity extends Activity implements View.OnClickListener  {
+public class AddFormworkActivity extends Activity implements View.OnClickListener {
 
     // Reference of DatabaseHelper class to access its DAOs and other components
     private DatabaseHelper databaseHelper = null;
@@ -48,7 +45,7 @@ public class AddFormworkActivity extends Activity implements View.OnClickListene
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 
-        getWindow().setLayout((int)(dm.widthPixels * 0.9), (int)(dm.heightPixels * 0.4));
+        getWindow().setLayout((int) (dm.widthPixels * 0.9), (int) (dm.heightPixels * 0.4));
 
         txtFormworkName = (EditText) findViewById(R.id.txtFormworkName);
         cboConstruction = (Spinner) findViewById(R.id.cboConstruction);
@@ -75,7 +72,7 @@ public class AddFormworkActivity extends Activity implements View.OnClickListene
 
             // Create an ArrayAdapter using the string array and a default spinner layout
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-            android.R.layout.simple_spinner_item, constructions);
+                    android.R.layout.simple_spinner_item, constructions);
 
             // Specify the layout to use when the list of choices appears
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -89,7 +86,7 @@ public class AddFormworkActivity extends Activity implements View.OnClickListene
     // This is how, DatabaseHelper can be initialized for future use
     private DatabaseHelper getHelper() {
         if (databaseHelper == null) {
-            databaseHelper = OpenHelperManager.getHelper(this,DatabaseHelper.class);
+            databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
         }
         return databaseHelper;
     }
@@ -137,8 +134,7 @@ public class AddFormworkActivity extends Activity implements View.OnClickListene
         }
     }
 
-    private void showMessageDialog(final String message)
-    {
+    private void showMessageDialog(final String message) {
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setMessage(message);
 

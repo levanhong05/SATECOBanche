@@ -2,7 +2,6 @@ package com.dfm.honglv.satecobanche.functions;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -37,7 +36,7 @@ public class AddConstructionActivity extends Activity implements View.OnClickLis
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 
-        getWindow().setLayout((int)(dm.widthPixels * 0.9), (int)(dm.heightPixels * 0.4));
+        getWindow().setLayout((int) (dm.widthPixels * 0.9), (int) (dm.heightPixels * 0.5));
 
         txtConstructionName = (EditText) findViewById(R.id.txtConstructionName);
         txtLatitude = (EditText) findViewById(R.id.add_latitude);
@@ -56,8 +55,8 @@ public class AddConstructionActivity extends Activity implements View.OnClickLis
                 latitude = 48.857708;
                 longitude = 2.348928;
             } else {
-                latitude= extras.getDouble("latitude");
-                longitude= extras.getDouble("longitude");
+                latitude = extras.getDouble("latitude");
+                longitude = extras.getDouble("longitude");
             }
         } else {
             latitude = (double) savedInstanceState.getSerializable("latitude");
@@ -71,7 +70,7 @@ public class AddConstructionActivity extends Activity implements View.OnClickLis
     // This is how, DatabaseHelper can be initialized for future use
     private DatabaseHelper getHelper() {
         if (databaseHelper == null) {
-            databaseHelper = OpenHelperManager.getHelper(this,DatabaseHelper.class);
+            databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
         }
         return databaseHelper;
     }
@@ -121,8 +120,7 @@ public class AddConstructionActivity extends Activity implements View.OnClickLis
         }
     }
 
-    private void showMessageDialog(final String message)
-    {
+    private void showMessageDialog(final String message) {
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setMessage(message);
 
