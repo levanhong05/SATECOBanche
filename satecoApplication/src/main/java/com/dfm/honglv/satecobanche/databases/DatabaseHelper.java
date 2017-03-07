@@ -21,7 +21,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     private Dao<ConstructionDetails, Integer> mContructionDao;
-    private Dao<BancheDetails, Integer> mBancheDao;
+    private Dao<FormworkDetails, Integer> mFormworkDao;
+    private Dao<ChipDetails, Integer> mChipDao;
+    private Dao<DataDetails, Integer> mDataDao;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION, R.raw.ormlite_config);
@@ -37,7 +39,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
             // Create tables. This onCreate() method will be invoked only once of the application life time i.e. the first time when the application starts.
             TableUtils.createTable(connectionSource, ConstructionDetails.class);
-            TableUtils.createTable(connectionSource, BancheDetails.class);
+            TableUtils.createTable(connectionSource, FormworkDetails.class);
+            TableUtils.createTable(connectionSource, ChipDetails.class);
+            TableUtils.createTable(connectionSource, DataDetails.class);
 
         } catch (SQLException e) {
             Log.e(DatabaseHelper.class.getName(), "Unable to create datbases", e);
@@ -53,7 +57,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             // existing database etc.
 
             TableUtils.dropTable(connectionSource, ConstructionDetails.class, true);
-            TableUtils.dropTable(connectionSource, BancheDetails.class, true);
+            TableUtils.dropTable(connectionSource, FormworkDetails.class, true);
+            TableUtils.dropTable(connectionSource, ChipDetails.class, true);
+            TableUtils.dropTable(connectionSource, DataDetails.class, true);
             onCreate(sqliteDatabase, connectionSource);
 
         } catch (SQLException e) {
@@ -73,11 +79,27 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return mContructionDao;
     }
 
-    public Dao<BancheDetails, Integer> getBancheDao() throws SQLException {
-        if (mBancheDao == null) {
-            mBancheDao = getDao(BancheDetails.class);
+    public Dao<FormworkDetails, Integer> getFormworkDao() throws SQLException {
+        if (mFormworkDao == null) {
+            mFormworkDao = getDao(FormworkDetails.class);
         }
 
-        return mBancheDao;
+        return mFormworkDao;
+    }
+
+    public Dao<ChipDetails, Integer> getChipDao() throws SQLException {
+        if (mChipDao == null) {
+            mChipDao = getDao(ChipDetails.class);
+        }
+
+        return mChipDao;
+    }
+
+    public Dao<DataDetails, Integer> getDataDao() throws SQLException {
+        if (mDataDao == null) {
+            mDataDao = getDao(DataDetails.class);
+        }
+
+        return mDataDao;
     }
 }

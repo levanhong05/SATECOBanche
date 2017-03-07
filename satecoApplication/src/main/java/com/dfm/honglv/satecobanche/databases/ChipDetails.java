@@ -15,7 +15,7 @@ public class ChipDetails implements Serializable {
     private static final long serialVersionUID = -222864131214757024L;
 
     public static final String ID_FIELD = "chip_id";
-    public static final String BANCHE_ID_FIELD = "banche_id";
+    public static final String FORMWORK_ID_FIELD = "formwork_id";
 
     // Primary key defined as an auto generated integer
     // If the database table column name differs than the Model class variable name, the way to map to use columnName
@@ -24,15 +24,15 @@ public class ChipDetails implements Serializable {
 
     // Foreign key defined to hold associations
     @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
-    public BancheDetails banche;
+    public FormworkDetails formwork;
 
     // Default constructor is needed for the SQLite, so make sure you also have it
-    public ChipDetails(){
+    public ChipDetails() {
 
     }
 
     //For our own purpose, so it's easier to create a StudentDetails object
-    public ChipDetails(BancheDetails banche){
-        this.banche = banche;
+    public ChipDetails(FormworkDetails formwork) {
+        this.formwork = formwork;
     }
 }

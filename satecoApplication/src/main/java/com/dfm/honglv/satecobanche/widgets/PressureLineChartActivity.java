@@ -34,7 +34,7 @@ public class PressureLineChartActivity extends ChartBase implements OnChartValue
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.content_banche);
+        setContentView(R.layout.content_formwork);
 
         value = (TextView) findViewById(R.id.pressurevalue);
 

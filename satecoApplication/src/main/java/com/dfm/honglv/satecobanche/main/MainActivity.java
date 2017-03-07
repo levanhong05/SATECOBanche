@@ -33,7 +33,9 @@ import android.widget.Toast;
 import com.dfm.honglv.satecobanche.R;
 import com.dfm.honglv.satecobanche.databases.ConstructionDetails;
 import com.dfm.honglv.satecobanche.databases.DatabaseHelper;
+import com.dfm.honglv.satecobanche.functions.AddChipActivity;
 import com.dfm.honglv.satecobanche.functions.AddConstructionActivity;
+import com.dfm.honglv.satecobanche.functions.AddFormworkActivity;
 import com.dfm.honglv.satecobanche.navigation.InformationActivity;
 import com.dfm.honglv.satecobanche.navigation.SettingsActivity;
 import com.google.android.gms.common.ConnectionResult;
@@ -249,7 +251,7 @@ public class MainActivity extends AppCompatActivity
                     int id = item.getItemId();
 
                     switch (id) {
-                        case R.id.add_contruction: {
+                        case R.id.add_construction: {
                             Intent intent = new Intent(MainActivity.this, AddConstructionActivity.class);
 
                             //intent.putExtra("latitude", latLng.latitude);
@@ -260,15 +262,19 @@ public class MainActivity extends AppCompatActivity
                             break;
                         }
 
-                        case R.id.add_banche: {
-                            Toast.makeText(getApplicationContext(), "Add new banche!",
-                                    Toast.LENGTH_SHORT).show();
+                        case R.id.add_formwork: {
+                            Intent intent = new Intent(MainActivity.this, AddFormworkActivity.class);
+
+                            startActivity(intent);
+
                             break;
                         }
 
                         case R.id.add_chip: {
-                            Toast.makeText(getApplicationContext(), "Add new chip!",
-                                    Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(MainActivity.this, AddChipActivity.class);
+
+                            startActivity(intent);
+
                             break;
                         }
                     }
@@ -295,7 +301,7 @@ public class MainActivity extends AppCompatActivity
 
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-        boolean isMarked = false;
+        //boolean isMarked = false;
 
         try {
             // This is how, a reference of DAO object can be done
@@ -304,13 +310,13 @@ public class MainActivity extends AppCompatActivity
             // Query the database. We need all the records so, used queryForAll()
             constructionList = constructionDao.queryForAll();
 
-            // Iterate through the BancheDetails object iterator and populate the comma separated String
+            // Iterate through the FormworkDetails object iterator and populate the comma separated String
             for (ConstructionDetails construction : constructionList) {
                 LatLng latLg = new LatLng(construction.latitude, construction.longitude);
                 mMap.addMarker(new MarkerOptions().position(latLg).title(construction.constructionName));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLg));
 
-                isMarked = true;
+                //isMarked = true;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -354,24 +360,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             }
 
-            case R.id.nav_add_contruction: {
-                Intent intent = new Intent(MainActivity.this, AddConstructionActivity.class);
-
-                //intent.putExtra("latitude", latLng.latitude);
-                //intent.putExtra("longitude", latLng.longitude);
-
-                startActivity(intent);
-
-                break;
-            }
-
-            case R.id.nav_add_banche: {
-                Toast.makeText(getApplicationContext(), "Add new banche!",
-                        Toast.LENGTH_SHORT).show();
-                break;
-            }
-
-            case R.id.nav_infos: {
+            case R.id.nav_info: {
                 Intent intent = new Intent(MainActivity.this, InformationActivity.class);
                 startActivity(intent);
                 break;

@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class BancheActivity extends ChartBase implements OnChartValueSelectedListener {
+public class FormworkActivity extends ChartBase implements OnChartValueSelectedListener {
 
     TabHost mTabHost;
 
@@ -50,7 +50,7 @@ public class BancheActivity extends ChartBase implements OnChartValueSelectedLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_banche);
+        setContentView(R.layout.activity_formwork);
 
         mTabHost = (TabHost)findViewById(R.id.tabHost);
         mTabHost.setup();

@@ -15,8 +15,7 @@ import android.widget.TextView;
 import android.widget.TwoLineListItem;
 
 import com.dfm.honglv.satecobanche.R;
-import com.dfm.honglv.satecobanche.databases.BancheDetails;
-import com.dfm.honglv.satecobanche.databases.ConstructionDetails;
+import com.dfm.honglv.satecobanche.databases.FormworkDetails;
 import com.dfm.honglv.satecobanche.databases.DatabaseHelper;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
@@ -34,10 +33,10 @@ public class ChooseBancheActivity extends Activity {
     // Reference of DatabaseHelper class to access its DAOs and other components
     private DatabaseHelper databaseHelper = null;
 
-    private Dao<BancheDetails, Integer> bancheDao;
+    private Dao<FormworkDetails, Integer> bancheDao;
 
-    // It holds the list of BancheDetails objects fetched from Database
-    private List<BancheDetails> bancheList;
+    // It holds the list of FormworkDetails objects fetched from Database
+    private List<FormworkDetails> bancheList;
 
     private int constructionId;
     private double latitude;
@@ -45,7 +44,7 @@ public class ChooseBancheActivity extends Activity {
 
     private String constructionName;
 
-    private ArrayAdapter<BancheDetails> mAdapter;
+    private ArrayAdapter<FormworkDetails> mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,21 +84,21 @@ public class ChooseBancheActivity extends Activity {
 
         try {
             // This is how, a reference of DAO object can be done
-            bancheDao = getHelper().getBancheDao();
+            bancheDao = getHelper().getFormworkDao();
 
             // Get our query builder from the DAO
-            final QueryBuilder<BancheDetails, Integer> queryBuilder = bancheDao.queryBuilder();
+            final QueryBuilder<FormworkDetails, Integer> queryBuilder = bancheDao.queryBuilder();
 
             // We need only Banche which are associated with the selected Construction, so build the query by "Where" clause
-            queryBuilder.where().eq(BancheDetails.CONSTRUCTION_ID_FIELD, constructionId);
+            queryBuilder.where().eq(FormworkDetails.CONSTRUCTION_ID_FIELD, constructionId);
 
             // Prepare our SQL statement
-            final PreparedQuery<BancheDetails> preparedQuery = queryBuilder.prepare();
+            final PreparedQuery<FormworkDetails> preparedQuery = queryBuilder.prepare();
 
             // Fetch the list from Database by querying it
             bancheList = bancheDao.query(preparedQuery);
 
-            mAdapter = new ArrayAdapter<BancheDetails>(this,
+            mAdapter = new ArrayAdapter<FormworkDetails>(this,
                     android.R.layout.simple_expandable_list_item_2, bancheList) {
                 @Override
                 public View getView(int position, View convertView, ViewGroup parent) {
@@ -112,8 +111,8 @@ public class ChooseBancheActivity extends Activity {
                         row = (TwoLineListItem) convertView;
                     }
 
-                    final BancheDetails banche = bancheList.get(position);
-                    final String name = banche.bancheName;
+                    final FormworkDetails banche = bancheList.get(position);
+                    final String name = banche.formworkName;
 
                     row.getText1().setText(name);
 
@@ -134,8 +133,8 @@ public class ChooseBancheActivity extends Activity {
                         return;
                     }
 
-                    final BancheDetails banche = bancheList.get(position);
-                    Intent intent = new Intent("com.dfm.honglv.satecobanche.main.BancheActivity");
+                    final FormworkDetails banche = bancheList.get(position);
+                    Intent intent = new Intent("com.dfm.honglv.satecobanche.main.FormworkActivity");
                     startActivity(intent);
                 }
             });

@@ -23,17 +23,17 @@ fieldName=longitude
 
 #################################
 # --table-start--
-dataClass=com.dfm.honglv.satecobanche.databases.BancheDetails
-tableName=banche_details
+dataClass=com.dfm.honglv.satecobanche.databases.FormworkDetails
+tableName=formwork_details
 # --table-fields-start--
 # --field-start--
-fieldName=bancheId
-columnName=banche_id
+fieldName=formworkId
+columnName=formwork_id
 generatedId=true
 # --field-end--
 # --field-start--
-fieldName=bancheName
-columnName=banche_name
+fieldName=formworkName
+columnName=formwork_name
 # --field-end--
 # --field-start--
 fieldName=construction

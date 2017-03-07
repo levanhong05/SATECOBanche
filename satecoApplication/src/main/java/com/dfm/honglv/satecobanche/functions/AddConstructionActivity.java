@@ -107,8 +107,8 @@ public class AddConstructionActivity extends Activity implements View.OnClickLis
 
                     //This is the way to insert data into a database table
                     constructionDao.create(constructionDetails);
-                    reset();
-                    showDialog();
+
+                    finish();
                 } catch (SQLException e) {
                     e.printStackTrace();
                     showMessageDialog("Error!!");
@@ -117,7 +117,7 @@ public class AddConstructionActivity extends Activity implements View.OnClickLis
                 showMessageDialog("All fields are mandatory !!");
             }
         } else if (v == btnCancel) {
-            reset();
+            finish();
         }
     }
 
@@ -126,38 +126,6 @@ public class AddConstructionActivity extends Activity implements View.OnClickLis
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setMessage(message);
 
-        final AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
-    }
-
-    // Clear the entered text
-    private void reset()
-    {
-        txtConstructionName.setText("");
-    }
-
-    private void showDialog()
-    {
-        // After submission, Dialog opens up with "Success" message. So, build the AlartBox first
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-
-        // Set the appropriate message into it.
-        alertDialogBuilder.setMessage("Construction added successfully !!");
-
-        // Add a negative button and it's action. In our case, just open up the ViewConstructionRecordActivity screen
-        // to display all the records
-        alertDialogBuilder.setNegativeButton("View Records",
-                new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //Intent negativeActivity = new Intent(getApplicationContext(),ViewConstructionRecordActivity.class);
-                        //startActivity(negativeActivity);
-                        finish();
-                    }
-                });
-
-        // Now, create the Dialog and show it.
         final AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
     }
