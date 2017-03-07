@@ -68,7 +68,7 @@
             android:value="AIzaSyD9hbuwIzfWOUCw55cct8BSpHDI_EDlJtE" />
 
         <activity
-            android:name=".navigation.ConstructionAddActivity"
+            android:name=".functions.AddConstructionActivity"
             android:theme="@style/AppTheme.PopupWindowTheme" />
         <activity android:name=".navigation.ViewConstructionRecordActivity" />
         <activity android:name=".navigation.ViewConstructionDetailsActivity" />
@@ -80,20 +80,21 @@
 
         <activity
             android:name=".navigation.SettingsActivity"
-            android:parentActivityName="com.dfm.honglv.satecobanche.main.MainActivity" >
+            android:parentActivityName=".main.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.dfm.honglv.satecobanche.main.MainActivity" />
         </activity>
-
         <activity android:name=".main.ChooseBancheActivity" />
         <activity
             android:name=".navigation.InformationActivity"
-            android:parentActivityName="com.dfm.honglv.satecobanche.main.MainActivity" >
+            android:parentActivityName=".main.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.dfm.honglv.satecobanche.main.MainActivity" />
         </activity>
+        <activity android:name=".functions.AddFormworkActivity" />
+        <activity android:name=".functions.AddChipActivity"></activity>
     </application>
 
 </manifest>

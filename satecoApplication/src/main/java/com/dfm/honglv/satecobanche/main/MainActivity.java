@@ -33,7 +33,7 @@ import android.widget.Toast;
 import com.dfm.honglv.satecobanche.R;
 import com.dfm.honglv.satecobanche.databases.ConstructionDetails;
 import com.dfm.honglv.satecobanche.databases.DatabaseHelper;
-import com.dfm.honglv.satecobanche.navigation.ConstructionAddActivity;
+import com.dfm.honglv.satecobanche.functions.AddConstructionActivity;
 import com.dfm.honglv.satecobanche.navigation.InformationActivity;
 import com.dfm.honglv.satecobanche.navigation.SettingsActivity;
 import com.google.android.gms.common.ConnectionResult;
@@ -245,9 +245,34 @@ public class MainActivity extends AppCompatActivity
 
             popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 public boolean onMenuItemClick(MenuItem item) {
-                    Toast.makeText(MainActivity.this,
-                            "Clicked popup menu item " + item.getTitle(),
-                            Toast.LENGTH_SHORT).show();
+
+                    int id = item.getItemId();
+
+                    switch (id) {
+                        case R.id.add_contruction: {
+                            Intent intent = new Intent(MainActivity.this, AddConstructionActivity.class);
+
+                            //intent.putExtra("latitude", latLng.latitude);
+                            //intent.putExtra("longitude", latLng.longitude);
+
+                            startActivity(intent);
+
+                            break;
+                        }
+
+                        case R.id.add_banche: {
+                            Toast.makeText(getApplicationContext(), "Add new banche!",
+                                    Toast.LENGTH_SHORT).show();
+                            break;
+                        }
+
+                        case R.id.add_chip: {
+                            Toast.makeText(getApplicationContext(), "Add new chip!",
+                                    Toast.LENGTH_SHORT).show();
+                            break;
+                        }
+                    }
+
                     return true;
                 }
             });
@@ -291,13 +316,13 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        if (!isMarked) {
-            // Add a marker in Sydney and move the camera
-            LatLng paris = new LatLng(48.857708, 2.348928);
-
-            mMap.addMarker(new MarkerOptions().position(paris).title("Paris"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(paris));
-        }
+//        if (!isMarked) {
+//            // Add a marker in Sydney and move the camera
+//            LatLng paris = new LatLng(48.857708, 2.348928);
+//
+//            mMap.addMarker(new MarkerOptions().position(paris).title("Paris"));
+//            mMap.moveCamera(CameraUpdateFactory.newLatLng(paris));
+//        }
 
         mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         mMap.getUiSettings().setZoomControlsEnabled(true);
@@ -330,8 +355,13 @@ public class MainActivity extends AppCompatActivity
             }
 
             case R.id.nav_add_contruction: {
-                Toast.makeText(getApplicationContext(), "Add new construction!",
-                        Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, AddConstructionActivity.class);
+
+                //intent.putExtra("latitude", latLng.latitude);
+                //intent.putExtra("longitude", latLng.longitude);
+
+                startActivity(intent);
+
                 break;
             }
 
@@ -342,18 +372,12 @@ public class MainActivity extends AppCompatActivity
             }
 
             case R.id.nav_infos: {
-                Toast.makeText(getApplicationContext(), "Information!",
-                        Toast.LENGTH_SHORT).show();
-
                 Intent intent = new Intent(MainActivity.this, InformationActivity.class);
                 startActivity(intent);
                 break;
             }
 
             case R.id.nav_settings: {
-                Toast.makeText(getApplicationContext(), "Settings!",
-                        Toast.LENGTH_SHORT).show();
-
                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
                 startActivity(intent);
 
@@ -482,7 +506,7 @@ public class MainActivity extends AppCompatActivity
         // mMap.clear();
         mMap.addMarker(new MarkerOptions().position(latLng).draggable(true));
 
-        Intent intent = new Intent(MainActivity.this, ConstructionAddActivity.class);
+        Intent intent = new Intent(MainActivity.this, AddConstructionActivity.class);
 
         intent.putExtra("latitude", latLng.latitude);
         intent.putExtra("longitude", latLng.longitude);

@@ -7,6 +7,7 @@
 
     <string name="action_add_contruction">Add new contruction</string>
     <string name="action_add_banche">Add new banche</string>
+    <string name="action_add_chip">Add new chip</string>
 
     <string name="heightlabel">Hauteur</string>
     <string name="heightvalue">0</string>

@@ -9,4 +9,9 @@
         android:id="@+id/add_banche"
         android:icon="@drawable/ic_menu_plus_circle"
         android:title="@string/action_add_banche"/>
+
+    <item
+        android:id="@+id/add_chip"
+        android:icon="@drawable/ic_menu_plus_circle"
+        android:title="@string/action_add_chip"/>
 </menu>

@@ -1,4 +1,4 @@
-package com.dfm.honglv.satecobanche.navigation;
+package com.dfm.honglv.satecobanche.functions;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -17,7 +17,7 @@ import com.j256.ormlite.dao.Dao;
 
 import java.sql.SQLException;
 
-public class ConstructionAddActivity extends Activity implements View.OnClickListener {
+public class AddConstructionActivity extends Activity implements View.OnClickListener {
 
     // Reference of DatabaseHelper class to access its DAOs and other components
     private DatabaseHelper databaseHelper = null;
@@ -27,10 +27,12 @@ public class ConstructionAddActivity extends Activity implements View.OnClickLis
 
     double latitude, longitude;
 
+    private EditText txtLatitude, txtLongitude;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_construction_add);
+        setContentView(R.layout.activity_add_construction);
 
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -38,6 +40,9 @@ public class ConstructionAddActivity extends Activity implements View.OnClickLis
         getWindow().setLayout((int)(dm.widthPixels * 0.9), (int)(dm.heightPixels * 0.4));
 
         txtConstructionName = (EditText) findViewById(R.id.txtConstructionName);
+        txtLatitude = (EditText) findViewById(R.id.add_latitude);
+        txtLongitude = (EditText) findViewById(R.id.add_longitude);
+
         btnOK = (Button) findViewById(R.id.btnOK);
         btnCancel = (Button) findViewById(R.id.btnCancel);
 
@@ -58,6 +63,9 @@ public class ConstructionAddActivity extends Activity implements View.OnClickLis
             latitude = (double) savedInstanceState.getSerializable("latitude");
             longitude = (double) savedInstanceState.getSerializable("longitude");
         }
+
+        txtLatitude.setText("" + latitude);
+        txtLongitude.setText("" + longitude);
     }
 
     // This is how, DatabaseHelper can be initialized for future use
