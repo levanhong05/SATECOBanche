@@ -539,6 +539,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onMarkerClick(Marker marker) {
         Intent intent = new Intent(MainActivity.this, ChooseBancheActivity.class);
 
+        intent.putExtra("constructionId", 1);
         intent.putExtra("constructionName", marker.getTitle());
         intent.putExtra("latitude", marker.getPosition().latitude);
         intent.putExtra("longitude", marker.getPosition().longitude);

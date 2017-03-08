@@ -1,12 +1,11 @@
 apply plugin: 'com.android.library'
 
 android {
-
     group = 'com.felhr.usbserial'
     version = '1.0.0'
 
     compileSdkVersion 25
-    buildToolsVersion "25.0.1"
+    buildToolsVersion "25.0.2"
 
     compileOptions {
         encoding "UTF-8"

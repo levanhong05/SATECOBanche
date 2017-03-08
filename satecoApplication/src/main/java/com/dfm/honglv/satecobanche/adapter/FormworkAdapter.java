@@ -17,8 +17,7 @@ import java.util.List;
 
 // Custom Adapter to feed data to the Construction Spinner
 @SuppressWarnings("rawtypes")
-public class FormworkAdapter extends ArrayAdapter<String>
-{
+public class FormworkAdapter extends ArrayAdapter<String> {
     LayoutInflater inflater;
 
     // Holds data of Construction Details
@@ -28,7 +27,7 @@ public class FormworkAdapter extends ArrayAdapter<String>
     public FormworkAdapter(Context context, int resource, int dropDownViewResource, List objects) {
         super(context, resource, objects);
         this.setDropDownViewResource(dropDownViewResource);
-        inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         // set the Construction Details objects to populate the Spinner
         this.objects = objects;
@@ -40,7 +39,7 @@ public class FormworkAdapter extends ArrayAdapter<String>
     }
 
     @Override
-    public View getDropDownView(int position, View convertView,ViewGroup parent) {
+    public View getDropDownView(int position, View convertView, ViewGroup parent) {
         return getCustomView(position, convertView, parent);
     }
 
@@ -51,9 +50,10 @@ public class FormworkAdapter extends ArrayAdapter<String>
         final View row = inflater.inflate(android.R.layout.simple_spinner_item, parent, false);
 
         final TextView label = (TextView) row.findViewById(android.R.id.text1);
-        label.setPadding(0,9,0,9);
+        label.setPadding(16, 16, 16, 16);
         final ConstructionDetails construction = (ConstructionDetails) this.objects.get(position);
         label.setText(construction.constructionName);
+
         return row;
     }
 }

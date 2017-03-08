@@ -27,6 +27,9 @@
         android:theme="@style/AppTheme">
 
         <!-- API key for the Android Maps API v2. The value is defined as a string resource. -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyD9hbuwIzfWOUCw55cct8BSpHDI_EDlJtE" />
 
         <activity
             android:name=".main.MainActivity"
@@ -50,14 +53,14 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="com.dfm.honglv.satecobanche.BancheActivity" />
+                <action android:name="com.dfm.honglv.satecobanche.main.FormworkActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity android:name=".main.SplashActivity">
             <intent-filter>
-                <action android:name="android.intent.action.SplashActivity" />
+                <action android:name="android.intent.action.main.SplashActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
