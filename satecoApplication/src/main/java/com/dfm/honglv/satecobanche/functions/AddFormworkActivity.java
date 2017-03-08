@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.dfm.honglv.satecobanche.R;
+import com.dfm.honglv.satecobanche.adapter.FormworkAdapter;
 import com.dfm.honglv.satecobanche.databases.ConstructionDetails;
 import com.dfm.honglv.satecobanche.databases.DatabaseHelper;
 import com.dfm.honglv.satecobanche.databases.FormworkDetails;
@@ -63,21 +64,9 @@ public class AddFormworkActivity extends Activity implements View.OnClickListene
             // Query the database. We need all the records so, used queryForAll()
             constructionList = constructionDao.queryForAll();
 
-            ArrayList<String> constructions = new ArrayList<String>();
-
-            // Iterate through the FormworkDetails object iterator and populate the comma separated String
-            for (ConstructionDetails construction : constructionList) {
-                constructions.add(construction.constructionName);
-            }
-
-            // Create an ArrayAdapter using the string array and a default spinner layout
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                    android.R.layout.simple_spinner_item, constructions);
-
-            // Specify the layout to use when the list of choices appears
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            // Apply the adapter to the spinner
-            cboConstruction.setAdapter(adapter);
+            // Populate the spinner with Construction data by using CustomAdapter
+            cboConstruction.setAdapter(new FormworkAdapter(this,android.R.layout.simple_spinner_item,
+                    android.R.layout.simple_spinner_dropdown_item, constructionList));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -106,28 +95,35 @@ public class AddFormworkActivity extends Activity implements View.OnClickListene
     @Override
     public void onClick(View v) {
         if (v == btnOK) {
-            // All input fields are mandatory, so made a check
-            if (txtFormworkName.getText().toString().trim().length() > 0) {
-                // Once click on "Submit", it's first creates the TeacherDetails object
-                final FormworkDetails formwork = new FormworkDetails();
+            if (constructionList.size() > 0) {
+                // All input fields are mandatory, so made a check
+                if (txtFormworkName.getText().toString().trim().length() > 0) {
+                    // Once click on "Submit", it's first creates the TeacherDetails object
+                    final FormworkDetails formwork = new FormworkDetails();
 
-                // Then, set all the values from user input
-                formwork.formworkName = txtFormworkName.getText().toString();
+                    // Then, set all the values from user input
+                    formwork.formworkName = txtFormworkName.getText().toString();
 
-                try {
-                    // This is how, a reference of DAO object can be done
-                    final Dao<FormworkDetails, Integer> formworkDao = getHelper().getFormworkDao();
+                    // FormworkDetails has a reference to ConstructionDetails, so set the reference as well
+                    formwork.construction = (ConstructionDetails) cboConstruction.getSelectedItem();
 
-                    //This is the way to insert data into a database table
-                    formworkDao.create(formwork);
+                    try {
+                        // This is how, a reference of DAO object can be done
+                        final Dao<FormworkDetails, Integer> formworkDao = getHelper().getFormworkDao();
 
-                    finish();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    showMessageDialog("Error!!");
+                        //This is the way to insert data into a database table
+                        formworkDao.create(formwork);
+
+                        finish();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        showMessageDialog("Error!!");
+                    }
+                } else {
+                    showMessageDialog("All fields are mandatory !!");
                 }
             } else {
-                showMessageDialog("All fields are mandatory !!");
+                showMessageDialog("Please, add construction first !!");
             }
         } else if (v == btnCancel) {
             finish();

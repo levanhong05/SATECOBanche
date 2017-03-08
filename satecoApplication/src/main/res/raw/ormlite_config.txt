@@ -55,8 +55,8 @@ columnName=chip_id
 generatedId=true
 # --field-end--
 # --field-start--
-fieldName=banche
-columnName=banche_id
+fieldName=formwork
+columnName=formwork_id
 foreign=true
 # --field-end--
 # --table-fields-end--
