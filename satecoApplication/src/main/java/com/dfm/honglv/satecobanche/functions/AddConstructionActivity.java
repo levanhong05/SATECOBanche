@@ -2,6 +2,7 @@ package com.dfm.honglv.satecobanche.functions;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -11,6 +12,9 @@ import android.widget.EditText;
 import com.dfm.honglv.satecobanche.R;
 import com.dfm.honglv.satecobanche.databases.ConstructionDetails;
 import com.dfm.honglv.satecobanche.databases.DatabaseHelper;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 
@@ -95,6 +99,9 @@ public class AddConstructionActivity extends Activity implements View.OnClickLis
                 // Once click on "Submit", it's first creates the TeacherDetails object
                 final ConstructionDetails constructionDetails = new ConstructionDetails();
 
+                latitude = Double.parseDouble(txtLatitude.getText().toString());
+                longitude = Double.parseDouble(txtLongitude.getText().toString());
+
                 // Then, set all the values from user input
                 constructionDetails.constructionName = txtConstructionName.getText().toString();
                 constructionDetails.latitude = latitude;
@@ -106,6 +113,14 @@ public class AddConstructionActivity extends Activity implements View.OnClickLis
 
                     //This is the way to insert data into a database table
                     constructionDao.create(constructionDetails);
+
+                    // put the String to pass back into an Intent and close this activity
+                    Intent intent = new Intent();
+                    intent.putExtra("constructionName", txtConstructionName.getText().toString());
+                    intent.putExtra("latitude", latitude);
+                    intent.putExtra("longitude", longitude);
+
+                    setResult(RESULT_OK, intent);
 
                     finish();
                 } catch (SQLException e) {

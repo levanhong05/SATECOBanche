@@ -23,7 +23,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/sateco"
+                app:srcCompat="@drawable/ic_sateco"
                 android:layout_alignParentTop="true"
                 android:id="@+id/imageLogo"
                 android:layout_centerHorizontal="true"
@@ -54,7 +54,13 @@
                     android:gravity="center_horizontal" />
 
                 <TextView
-                    android:text="© 2017 DFM-Engineering Ltd."
+                    android:text="© 2017 SATECO S.A.S"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txtCopyright"
+                    android:gravity="center_horizontal" />
+                <TextView
+                    android:text="Developed by DFM-Europe Ltd."
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/txtCompany"

@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity
         GoogleMap.OnMarkerClickListener,
         View.OnClickListener {
 
+    private static final int ADD_CONSTRUCTION_ACTIVITY_RESULT_CODE = 0;
     /*
      * Notifications from UsbService will be received here.
     */
@@ -252,10 +253,11 @@ public class MainActivity extends AppCompatActivity
                         case R.id.add_construction: {
                             Intent intent = new Intent(MainActivity.this, AddConstructionActivity.class);
 
-                            //intent.putExtra("mLatitude", latLng.mLatitude);
-                            //intent.putExtra("mLongitude", latLng.mLongitude);
+                            //intent.putExtra("latitude", latLng.latitude);
+                            //intent.putExtra("longitude", latLng.longitude);
 
                             startActivity(intent);
+                            startActivityForResult(intent, ADD_CONSTRUCTION_ACTIVITY_RESULT_CODE);
 
                             break;
                         }
@@ -293,6 +295,24 @@ public class MainActivity extends AppCompatActivity
         return databaseHelper;
     }
 
+    // This method is called when the second activity finishes
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // check that it is the SecondActivity with an OK result
+        if (requestCode == ADD_CONSTRUCTION_ACTIVITY_RESULT_CODE) {
+            if (resultCode == RESULT_OK) {
+                // get String data from Intent
+                String constructionName = data.getStringExtra("constructionName");
+                mLatitude = data.getDoubleExtra("latitude", 0);
+                mLongitude = data.getDoubleExtra("longitude", 0);
+
+                moveMap();
+            }
+        }
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -312,7 +332,7 @@ public class MainActivity extends AppCompatActivity
                 numberConstruction++;
 
                 LatLng latLg = new LatLng(construction.latitude, construction.longitude);
-                mMap.addMarker(new MarkerOptions().position(latLg).title(construction.constructionName)).setTag(numberConstruction);
+                mMap.addMarker(new MarkerOptions().position(latLg).title(construction.constructionName)).setTag(construction.constructionId);
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLg));
             }
         } catch (SQLException e) {
@@ -376,6 +396,7 @@ public class MainActivity extends AppCompatActivity
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
         if (location != null) {
