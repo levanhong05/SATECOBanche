@@ -29,7 +29,7 @@
         <!-- API key for the Android Maps API v2. The value is defined as a string resource. -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyD9hbuwIzfWOUCw55cct8BSpHDI_EDlJtE" />
+            android:value="AIzaSyAkm1_YF-r7JsvdxBjblI1zQxL4c4vU4zM" />
 
         <activity
             android:name=".main.MainActivity"

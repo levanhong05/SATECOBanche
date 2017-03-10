@@ -9,3 +9,4 @@
 .externalNativeBuild
 /usbSerialForAndroid/build
 /gradle
+/.idea/kotlinc.xml
