@@ -20,8 +20,9 @@ public class SplashActivity extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
-                    Intent intent = new Intent("com.dfm.honglv.satecobanche.MainActivity");
+                    Intent intent = new Intent("com.dfm.honglv.satecobanche.main.FormWorkActivity");
                     startActivity(intent);
+                    finish();
                 }
             }
         };

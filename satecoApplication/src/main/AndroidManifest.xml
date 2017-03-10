@@ -55,20 +55,20 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <!-- <action android:name="com.dfm.honglv.satecobanche.main.FormworkActivity" />
+                <action android:name="com.dfm.honglv.satecobanche.main.FormWorkActivity" />
 
-                <category android:name="android.intent.category.DEFAULT" /> -->
+                <category android:name="android.intent.category.DEFAULT" />
 
-                <action android:name="android.intent.action.MAIN" />
+                <!-- <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER" /> -->
             </intent-filter>
         </activity>
         <activity android:name=".main.SplashActivity">
             <intent-filter>
-                <action android:name="android.intent.action.main.SplashActivity" />
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".widgets.PressureLineChartActivity" />
@@ -96,7 +96,8 @@
         <activity android:name=".main.ChooseFormWorkActivity" />
         <activity
             android:name=".navigation.InformationActivity"
-            android:parentActivityName=".main.MainActivity">
+            android:parentActivityName=".main.MainActivity"
+            android:label="Information">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.dfm.honglv.satecobanche.main.MainActivity" />

@@ -1,1 +1,1 @@
-include ':satecoApplication', ':usbserial'
+include ':satecoApplication', ':usbserial', ':MPChartLib'

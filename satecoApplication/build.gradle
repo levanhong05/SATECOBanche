@@ -33,7 +33,8 @@ dependencies {
     })
     compile 'com.j256.ormlite:ormlite-android:5.0'
     compile project(':usbserial')
-    compile 'com.github.PhilJay:MPAndroidChart:v3.0.1'
+    compile project(':MPChartLib')
+    //compile 'com.github.PhilJay:MPAndroidChart:v3.0.1'
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile 'com.android.support:design:25.2.0'
     compile 'com.google.android.gms:play-services:10.2.0'

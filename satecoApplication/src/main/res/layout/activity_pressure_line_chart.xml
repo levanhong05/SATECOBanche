@@ -29,7 +29,8 @@
         android:layout_marginRight="10dp"
         android:gravity="right"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:paddingBottom="15dp" />
+        android:paddingBottom="15dp"
+        android:paddingTop="20dp" />
 
     <TextView
         android:id="@+id/pressureunit"

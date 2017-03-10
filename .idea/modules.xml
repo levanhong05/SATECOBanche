@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/MPChartLib/MPChartLib.iml" filepath="$PROJECT_DIR$/MPChartLib/MPChartLib.iml" />
       <module fileurl="file://$PROJECT_DIR$/SATECOBanche.iml" filepath="$PROJECT_DIR$/SATECOBanche.iml" />
       <module fileurl="file://$PROJECT_DIR$/satecoApplication/satecoApplication.iml" filepath="$PROJECT_DIR$/satecoApplication/satecoApplication.iml" />
       <module fileurl="file://$PROJECT_DIR$/usbserial/usbserial.iml" filepath="$PROJECT_DIR$/usbserial/usbserial.iml" />

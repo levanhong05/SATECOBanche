@@ -12,9 +12,12 @@
     tools:context="com.dfm.honglv.satecobanche.main.SplashActivity">
 
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:srcCompat="@mipmap/ic_launcher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_sateco"
         android:id="@+id/placekitten"
-        android:contentDescription="@string/splash_image_description" />
+        android:contentDescription="@string/splash_image_description"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
