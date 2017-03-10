@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +11,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.TwoLineListItem;
+import android.widget.Toast;
 
 import com.dfm.honglv.satecobanche.R;
-import com.dfm.honglv.satecobanche.databases.FormworkDetails;
+import com.dfm.honglv.satecobanche.databases.FormWorkDetails;
 import com.dfm.honglv.satecobanche.databases.DatabaseHelper;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
@@ -25,7 +24,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import java.sql.SQLException;
 import java.util.List;
 
-public class ChooseBancheActivity extends Activity {
+public class ChooseFormWorkActivity extends Activity {
 
     ListView listView;
     TextView txtNameConstruction, txtLatitude, txtLongitude;
@@ -33,10 +32,10 @@ public class ChooseBancheActivity extends Activity {
     // Reference of DatabaseHelper class to access its DAOs and other components
     private DatabaseHelper databaseHelper = null;
 
-    private Dao<FormworkDetails, Integer> bancheDao;
+    private Dao<FormWorkDetails, Integer> formworkDao;
 
-    // It holds the list of FormworkDetails objects fetched from Database
-    private List<FormworkDetails> bancheList;
+    // It holds the list of FormWorkDetails objects fetched from Database
+    private List<FormWorkDetails> formworkList;
 
     private int constructionId;
     private double latitude;
@@ -44,7 +43,7 @@ public class ChooseBancheActivity extends Activity {
 
     private String constructionName;
 
-    private ArrayAdapter<FormworkDetails> mAdapter;
+    private ArrayAdapter<FormWorkDetails> mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,39 +83,37 @@ public class ChooseBancheActivity extends Activity {
 
         try {
             // This is how, a reference of DAO object can be done
-            bancheDao = getHelper().getFormworkDao();
+            formworkDao = getHelper().getFormworkDao();
 
             // Get our query builder from the DAO
-            final QueryBuilder<FormworkDetails, Integer> queryBuilder = bancheDao.queryBuilder();
+            final QueryBuilder<FormWorkDetails, Integer> queryBuilder = formworkDao.queryBuilder();
 
             // We need only Banche which are associated with the selected Construction, so build the query by "Where" clause
-            queryBuilder.where().eq(FormworkDetails.CONSTRUCTION_ID_FIELD, constructionId);
+            queryBuilder.where().eq(FormWorkDetails.CONSTRUCTION_ID_FIELD, constructionId);
 
             // Prepare our SQL statement
-            final PreparedQuery<FormworkDetails> preparedQuery = queryBuilder.prepare();
+            final PreparedQuery<FormWorkDetails> preparedQuery = queryBuilder.prepare();
 
             // Fetch the list from Database by querying it
-            bancheList = bancheDao.query(preparedQuery);
+            formworkList = formworkDao.query(preparedQuery);
 
-            mAdapter = new ArrayAdapter<FormworkDetails>(this,
-                    android.R.layout.simple_expandable_list_item_2, bancheList) {
+            mAdapter = new ArrayAdapter<FormWorkDetails>(this, android.R.layout.simple_expandable_list_item_1, formworkList) {
                 @Override
                 public View getView(int position, View convertView, ViewGroup parent) {
-                    final TwoLineListItem row;
+                    final TextView tv;
                     if (convertView == null){
-                        final LayoutInflater inflater =
-                                (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                        row = (TwoLineListItem) inflater.inflate(android.R.layout.simple_list_item_2, null);
+                        final LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        tv = (TextView) inflater.inflate(android.R.layout.simple_list_item_1, null);
                     } else {
-                        row = (TwoLineListItem) convertView;
+                        tv = (TextView) convertView;
                     }
 
-                    final FormworkDetails banche = bancheList.get(position);
-                    final String name = banche.formworkName;
+                    final FormWorkDetails formwork = formworkList.get(position);
+                    final String name = formwork.formWorkName;
 
-                    row.getText1().setText(name);
+                    tv.setText(name);
 
-                    return row;
+                    return tv;
                 }
 
             };
@@ -127,14 +124,17 @@ public class ChooseBancheActivity extends Activity {
             listView.setOnItemClickListener(new ListView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Log.d("ChooseBanche", "Pressed item " + position);
-                    if (position >= bancheList.size()) {
-                        Log.w("ChooseBanche", "Illegal position.");
+                    if (position >= formworkList.size()) {
+                        Toast.makeText(getApplicationContext(), "Illegal form-work position.!", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    final FormworkDetails banche = bancheList.get(position);
-                    Intent intent = new Intent("com.dfm.honglv.satecobanche.main.FormworkActivity");
+                    final FormWorkDetails formwork = formworkList.get(position);
+                    Intent intent = new Intent("com.dfm.honglv.satecobanche.main.FormWorkActivity");
+
+                    intent.putExtra("formWorkId", formwork.formWorkId);
+                    intent.putExtra("formWorkName", formwork.formWorkName);
+
                     startActivity(intent);
                 }
             });

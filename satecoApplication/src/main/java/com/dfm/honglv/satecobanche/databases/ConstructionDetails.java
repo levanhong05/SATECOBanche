@@ -16,6 +16,8 @@ public class ConstructionDetails implements Serializable {
 
     // Primary key defined as an auto generated integer
     // If the database table column name differs than the Model class variable name, the way to map to use columnName
+    public static final String CONSTRUCTION_ID_FIELD = "construction_id";
+
     @DatabaseField(generatedId = true, columnName = "construction_id")
     public int constructionId;
 

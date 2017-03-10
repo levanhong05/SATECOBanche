@@ -7,11 +7,7 @@ import android.view.View;
 
 import com.dfm.honglv.satecobanche.R;
 import com.dfm.honglv.satecobanche.databases.DatabaseHelper;
-import com.dfm.honglv.satecobanche.databases.FormworkDetails;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.dao.Dao;
-
-import java.sql.SQLException;
 
 public class AddChipActivity extends Activity implements View.OnClickListener {
 

@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -14,15 +13,14 @@ import com.dfm.honglv.satecobanche.R;
 import com.dfm.honglv.satecobanche.adapter.FormworkAdapter;
 import com.dfm.honglv.satecobanche.databases.ConstructionDetails;
 import com.dfm.honglv.satecobanche.databases.DatabaseHelper;
-import com.dfm.honglv.satecobanche.databases.FormworkDetails;
+import com.dfm.honglv.satecobanche.databases.FormWorkDetails;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
-public class AddFormworkActivity extends Activity implements View.OnClickListener {
+public class AddFormWorkActivity extends Activity implements View.OnClickListener {
 
     // Reference of DatabaseHelper class to access its DAOs and other components
     private DatabaseHelper databaseHelper = null;
@@ -99,17 +97,17 @@ public class AddFormworkActivity extends Activity implements View.OnClickListene
                 // All input fields are mandatory, so made a check
                 if (txtFormworkName.getText().toString().trim().length() > 0) {
                     // Once click on "Submit", it's first creates the TeacherDetails object
-                    final FormworkDetails formwork = new FormworkDetails();
+                    final FormWorkDetails formwork = new FormWorkDetails();
 
                     // Then, set all the values from user input
-                    formwork.formworkName = txtFormworkName.getText().toString();
+                    formwork.formWorkName = txtFormworkName.getText().toString();
 
-                    // FormworkDetails has a reference to ConstructionDetails, so set the reference as well
+                    // FormWorkDetails has a reference to ConstructionDetails, so set the reference as well
                     formwork.construction = (ConstructionDetails) cboConstruction.getSelectedItem();
 
                     try {
                         // This is how, a reference of DAO object can be done
-                        final Dao<FormworkDetails, Integer> formworkDao = getHelper().getFormworkDao();
+                        final Dao<FormWorkDetails, Integer> formworkDao = getHelper().getFormworkDao();
 
                         //This is the way to insert data into a database table
                         formworkDao.create(formwork);

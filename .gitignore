@@ -10,3 +10,4 @@
 /usbSerialForAndroid/build
 /gradle
 /.idea/kotlinc.xml
+/sateco.jks

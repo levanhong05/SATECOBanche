@@ -23,7 +23,7 @@ fieldName=longitude
 
 #################################
 # --table-start--
-dataClass=com.dfm.honglv.satecobanche.databases.FormworkDetails
+dataClass=com.dfm.honglv.satecobanche.databases.FormWorkDetails
 tableName=formwork_details
 # --table-fields-start--
 # --field-start--

@@ -8,7 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.dfm.honglv.satecobanche.R;
-import com.dfm.honglv.satecobanche.databases.FormworkDetails;
+import com.dfm.honglv.satecobanche.databases.FormWorkDetails;
 import com.dfm.honglv.satecobanche.databases.ConstructionDetails;
 import com.dfm.honglv.satecobanche.databases.DatabaseHelper;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
@@ -31,7 +31,7 @@ public class ViewConstructionDetailsActivity extends Activity implements OnClick
     private Button btnClose;
 
     // Declaration of DAO to interact with corresponding table
-    private Dao<FormworkDetails, Integer> bancheDao;
+    private Dao<FormWorkDetails, Integer> bancheDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,21 +60,21 @@ public class ViewConstructionDetailsActivity extends Activity implements OnClick
             bancheDao = getHelper().getFormworkDao();
 
             // Get our query builder from the DAO
-            final QueryBuilder<FormworkDetails, Integer> queryBuilder = bancheDao.queryBuilder();
+            final QueryBuilder<FormWorkDetails, Integer> queryBuilder = bancheDao.queryBuilder();
 
             // We need only Banche who are associated with the selected Constructions, so build the query by "Where" clause
-            queryBuilder.where().eq(FormworkDetails.CONSTRUCTION_ID_FIELD, tDetails.constructionId);
+            queryBuilder.where().eq(FormWorkDetails.CONSTRUCTION_ID_FIELD, tDetails.constructionId);
 
             // Prepare our SQL statement
-            final PreparedQuery<FormworkDetails> preparedQuery = queryBuilder.prepare();
+            final PreparedQuery<FormWorkDetails> preparedQuery = queryBuilder.prepare();
 
             // Fetch the list from Database by queryingit
-            final Iterator<FormworkDetails> bancheIt = bancheDao.query(preparedQuery).iterator();
+            final Iterator<FormWorkDetails> bancheIt = bancheDao.query(preparedQuery).iterator();
 
-            // Iterate through the FormworkDetails object iterator and populate the comma separated String
+            // Iterate through the FormWorkDetails object iterator and populate the comma separated String
             while (bancheIt.hasNext()) {
-                final FormworkDetails sDetails = bancheIt.next();
-                bancheName.add(sDetails.formworkName);
+                final FormWorkDetails sDetails = bancheIt.next();
+                bancheName.add(sDetails.formWorkName);
             }
         } catch (SQLException e) {
             e.printStackTrace();

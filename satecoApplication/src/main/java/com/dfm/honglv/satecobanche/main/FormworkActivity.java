@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class FormworkActivity extends ChartBase implements OnChartValueSelectedListener {
+public class FormWorkActivity extends ChartBase implements OnChartValueSelectedListener {
 
     TabHost mTabHost;
 
@@ -103,7 +103,7 @@ public class FormworkActivity extends ChartBase implements OnChartValueSelectedL
                 });
             }
         };
-        timer.schedule(timerTask, 30000, 30000);;
+        timer.schedule(timerTask, 10000, 10000);;
     }
 
     private void setupCharts() {

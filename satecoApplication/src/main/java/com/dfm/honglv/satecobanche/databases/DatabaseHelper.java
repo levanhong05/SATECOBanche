@@ -21,7 +21,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     private Dao<ConstructionDetails, Integer> mContructionDao;
-    private Dao<FormworkDetails, Integer> mFormworkDao;
+    private Dao<FormWorkDetails, Integer> mFormworkDao;
     private Dao<ChipDetails, Integer> mChipDao;
     private Dao<DataDetails, Integer> mDataDao;
 
@@ -39,7 +39,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
             // Create tables. This onCreate() method will be invoked only once of the application life time i.e. the first time when the application starts.
             TableUtils.createTable(connectionSource, ConstructionDetails.class);
-            TableUtils.createTable(connectionSource, FormworkDetails.class);
+            TableUtils.createTable(connectionSource, FormWorkDetails.class);
             TableUtils.createTable(connectionSource, ChipDetails.class);
             TableUtils.createTable(connectionSource, DataDetails.class);
 
@@ -57,7 +57,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             // existing database etc.
 
             TableUtils.dropTable(connectionSource, ConstructionDetails.class, true);
-            TableUtils.dropTable(connectionSource, FormworkDetails.class, true);
+            TableUtils.dropTable(connectionSource, FormWorkDetails.class, true);
             TableUtils.dropTable(connectionSource, ChipDetails.class, true);
             TableUtils.dropTable(connectionSource, DataDetails.class, true);
             onCreate(sqliteDatabase, connectionSource);
@@ -79,9 +79,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return mContructionDao;
     }
 
-    public Dao<FormworkDetails, Integer> getFormworkDao() throws SQLException {
+    public Dao<FormWorkDetails, Integer> getFormworkDao() throws SQLException {
         if (mFormworkDao == null) {
-            mFormworkDao = getDao(FormworkDetails.class);
+            mFormworkDao = getDao(FormWorkDetails.class);
         }
 
         return mFormworkDao;

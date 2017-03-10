@@ -24,7 +24,7 @@ public class ChipDetails implements Serializable {
 
     // Foreign key defined to hold associations
     @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
-    public FormworkDetails formwork;
+    public FormWorkDetails formwork;
 
     // Default constructor is needed for the SQLite, so make sure you also have it
     public ChipDetails() {
@@ -32,7 +32,7 @@ public class ChipDetails implements Serializable {
     }
 
     //For our own purpose, so it's easier to create a StudentDetails object
-    public ChipDetails(FormworkDetails formwork) {
+    public ChipDetails(FormWorkDetails formwork) {
         this.formwork = formwork;
     }
 }

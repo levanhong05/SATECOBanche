@@ -35,7 +35,7 @@ import com.dfm.honglv.satecobanche.databases.ConstructionDetails;
 import com.dfm.honglv.satecobanche.databases.DatabaseHelper;
 import com.dfm.honglv.satecobanche.functions.AddChipActivity;
 import com.dfm.honglv.satecobanche.functions.AddConstructionActivity;
-import com.dfm.honglv.satecobanche.functions.AddFormworkActivity;
+import com.dfm.honglv.satecobanche.functions.AddFormWorkActivity;
 import com.dfm.honglv.satecobanche.navigation.InformationActivity;
 import com.dfm.honglv.satecobanche.navigation.SettingsActivity;
 import com.google.android.gms.common.ConnectionResult;
@@ -50,6 +50,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.lang.ref.WeakReference;
 import java.sql.SQLException;
@@ -94,22 +96,18 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+    int numberConstruction;
+
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
 
-    private double longitude;
-    private double latitude;
+    private double mLongitude;
+    private double mLatitude;
 
     private FloatingActionButton fabAdd;
 
     // Reference of DatabaseHelper class to access its DAOs and other components
     private DatabaseHelper databaseHelper = null;
-
-    // Declaration of DAO to interact with corresponding table
-    private Dao<ConstructionDetails, Integer> constructionDao;
-
-    // It holds the list of ConstructionDetails object fetched from Database
-    private List<ConstructionDetails> constructionList;
 
     private USBService usbService;
 
@@ -254,8 +252,8 @@ public class MainActivity extends AppCompatActivity
                         case R.id.add_construction: {
                             Intent intent = new Intent(MainActivity.this, AddConstructionActivity.class);
 
-                            //intent.putExtra("latitude", latLng.latitude);
-                            //intent.putExtra("longitude", latLng.longitude);
+                            //intent.putExtra("mLatitude", latLng.mLatitude);
+                            //intent.putExtra("mLongitude", latLng.mLongitude);
 
                             startActivity(intent);
 
@@ -263,7 +261,7 @@ public class MainActivity extends AppCompatActivity
                         }
 
                         case R.id.add_formwork: {
-                            Intent intent = new Intent(MainActivity.this, AddFormworkActivity.class);
+                            Intent intent = new Intent(MainActivity.this, AddFormWorkActivity.class);
 
                             startActivity(intent);
 
@@ -301,34 +299,25 @@ public class MainActivity extends AppCompatActivity
 
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-        //boolean isMarked = false;
-
         try {
-            // This is how, a reference of DAO object can be done
-            constructionDao = getHelper().getConstructionDao();
+            // Declaration of DAO to interact with corresponding table
+            Dao<ConstructionDetails, Integer> constructionDao = getHelper().getConstructionDao();
 
             // Query the database. We need all the records so, used queryForAll()
-            constructionList = constructionDao.queryForAll();
+            // It holds the list of ConstructionDetails object fetched from Database
+            List<ConstructionDetails> constructionList = constructionDao.queryForAll();
 
-            // Iterate through the FormworkDetails object iterator and populate the comma separated String
+            // Iterate through the FormWorkDetails object iterator and populate the comma separated String
             for (ConstructionDetails construction : constructionList) {
-                LatLng latLg = new LatLng(construction.latitude, construction.longitude);
-                mMap.addMarker(new MarkerOptions().position(latLg).title(construction.constructionName));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLg));
+                numberConstruction++;
 
-                //isMarked = true;
+                LatLng latLg = new LatLng(construction.latitude, construction.longitude);
+                mMap.addMarker(new MarkerOptions().position(latLg).title(construction.constructionName)).setTag(numberConstruction);
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLg));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-//        if (!isMarked) {
-//            // Add a marker in Sydney and move the camera
-//            LatLng paris = new LatLng(48.857708, 2.348928);
-//
-//            mMap.addMarker(new MarkerOptions().position(paris).title("Paris"));
-//            mMap.moveCamera(CameraUpdateFactory.newLatLng(paris));
-//        }
 
         mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         mMap.getUiSettings().setZoomControlsEnabled(true);
@@ -382,24 +371,17 @@ public class MainActivity extends AppCompatActivity
 
     //Getting current location
     private void getCurrentLocation() {
-        mMap.clear();
+        //mMap.clear();
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
         if (location != null) {
-            //Getting longitude and latitude
-            longitude = location.getLongitude();
-            latitude = location.getLatitude();
+            //Getting mLongitude and mLatitude
+            mLongitude = location.getLongitude();
+            mLatitude = location.getLatitude();
 
             //moving the map to location
             moveMap();
@@ -407,17 +389,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void moveMap() {
-        /**
-         * Creating the latlng object to store lat, long coordinates
-         * adding marker to map
-         * move the camera with animation
-         */
-        LatLng latLng = new LatLng(latitude, longitude);
-
-        mMap.addMarker(new MarkerOptions()
-                .position(latLng)
-                .draggable(true)
-                .title("New construction!"));
+        LatLng latLng = new LatLng(mLatitude, mLongitude);
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
@@ -477,7 +449,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        //getCurrentLocation();
+        getCurrentLocation();
     }
 
     @Override
@@ -492,13 +464,14 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onMapLongClick(LatLng latLng) {
-        // mMap.clear();
-        mMap.addMarker(new MarkerOptions().position(latLng).draggable(true));
+        numberConstruction++;
+
+        mMap.addMarker(new MarkerOptions().position(latLng).draggable(true)).setTag(numberConstruction);
 
         Intent intent = new Intent(MainActivity.this, AddConstructionActivity.class);
 
-        intent.putExtra("latitude", latLng.latitude);
-        intent.putExtra("longitude", latLng.longitude);
+        intent.putExtra("mLatitude", latLng.latitude);
+        intent.putExtra("mLongitude", latLng.longitude);
 
         startActivity(intent);
     }
@@ -516,8 +489,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMarkerDragEnd(Marker marker) {
         // getting the Coordinates
-        latitude = marker.getPosition().latitude;
-        longitude = marker.getPosition().longitude;
+        mLatitude = marker.getPosition().latitude;
+        mLongitude = marker.getPosition().longitude;
 
         //move to current position
         moveMap();
@@ -537,14 +510,49 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        Intent intent = new Intent(MainActivity.this, ChooseBancheActivity.class);
+        int id = Integer.parseInt(marker.getTag().toString());
 
-        intent.putExtra("constructionId", 1);
-        intent.putExtra("constructionName", marker.getTitle());
-        intent.putExtra("latitude", marker.getPosition().latitude);
-        intent.putExtra("longitude", marker.getPosition().longitude);
+        String name = "";
+        double latitude = marker.getPosition().latitude;
+        double longitude = marker.getPosition().longitude;
 
-        startActivity(intent);
+        try {
+            // Declaration of DAO to interact with corresponding table
+            Dao<ConstructionDetails, Integer> constructionDao = getHelper().getConstructionDao();
+
+            // Get our query builder from the DAO
+            final QueryBuilder<ConstructionDetails, Integer> queryBuilder = constructionDao.queryBuilder();
+
+            queryBuilder.where().eq(ConstructionDetails.CONSTRUCTION_ID_FIELD, id);
+
+            // Prepare our SQL statement
+            final PreparedQuery<ConstructionDetails> preparedQuery = queryBuilder.prepare();
+
+            // Fetch the list from Database by querying it
+            // It holds the list of ConstructionDetails object fetched from Database
+            List<ConstructionDetails> constructionList = constructionDao.query(preparedQuery);
+
+            if (!constructionList.isEmpty()) {
+                id = constructionList.get(0).constructionId;
+                name = constructionList.get(0).constructionName;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if (id != -1) {
+            marker.setTitle(name);
+            Intent intent = new Intent(MainActivity.this, ChooseFormWorkActivity.class);
+
+            intent.putExtra("constructionId", id);
+            intent.putExtra("constructionName", name);
+            intent.putExtra("latitude", latitude);
+            intent.putExtra("longitude", longitude);
+
+            startActivity(intent);
+        } else {
+            Toast.makeText(getApplicationContext(), "Construction is invalid!", Toast.LENGTH_SHORT).show();
+        }
 
         return true;
     }

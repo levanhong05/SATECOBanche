@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Created by honglv on 02/03/2017.
  */
 
-public class FormworkDetails implements Serializable {
+public class FormWorkDetails implements Serializable {
     /**
      * Model class for student_details database table
      */
@@ -20,24 +20,24 @@ public class FormworkDetails implements Serializable {
     // Primary key defined as an auto generated integer
     // If the database table column name differs than the Model class variable name, the way to map to use columnName
     @DatabaseField(generatedId = true, columnName = ID_FIELD)
-    public int formworkId;
+    public int formWorkId;
 
     // Define a String type field to hold student's name
     @DatabaseField(columnName = "formwork_name")
-    public String formworkName;
+    public String formWorkName;
 
     // Foreign key defined to hold associations
     @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
     public ConstructionDetails construction;
 
     // Default constructor is needed for the SQLite, so make sure you also have it
-    public FormworkDetails(){
+    public FormWorkDetails(){
 
     }
 
     //For our own purpose, so it's easier to create a StudentDetails object
-    public FormworkDetails(final String name, ConstructionDetails construction){
-        this.formworkName = name;
+    public FormWorkDetails(final String name, ConstructionDetails construction){
+        this.formWorkName = name;
         this.construction = construction;
     }
 }
