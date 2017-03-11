@@ -3,6 +3,8 @@ package com.dfm.honglv.satecobanche.main;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.dfm.honglv.satecobanche.R;
 
@@ -20,7 +22,7 @@ public class SplashActivity extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
-                    Intent intent = new Intent("com.dfm.honglv.satecobanche.main.FormWorkActivity");
+                    Intent intent = new Intent(SplashActivity.this, FormWorkActivity.class);
                     startActivity(intent);
                     finish();
                 }

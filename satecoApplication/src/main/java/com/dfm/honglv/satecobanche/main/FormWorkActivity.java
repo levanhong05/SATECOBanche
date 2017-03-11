@@ -68,11 +68,6 @@ public class FormWorkActivity extends AppCompatActivity implements OnChartValueS
 
     private int mTime = 0;
 
-    private DataAdapter mAdapter;
-    private TCPClient mTcpClient;
-
-    private ArrayList<String> arrayList;
-
     protected Typeface mTfRegular;
     protected Typeface mTfLight;
 
@@ -162,7 +157,7 @@ public class FormWorkActivity extends AppCompatActivity implements OnChartValueS
 
         toolbar.setNavigationIcon(R.mipmap.ic_launcher);
 
-        mTabHost = (TabHost)findViewById(R.id.tabHost);
+        mTabHost = (TabHost) findViewById(R.id.tabHost);
         mTabHost.setup();
 
         mHandler = new USBHandler(this);
@@ -178,7 +173,7 @@ public class FormWorkActivity extends AppCompatActivity implements OnChartValueS
 
         //Tab 2
         spec = mTabHost.newTabSpec("Angle");
-        spec.setContent(R.id. activity_angle_line_chart);
+        spec.setContent(R.id.activity_angle_line_chart);
         spec.setIndicator("Inclinomètre");
         mTabHost.addTab(spec);
 
@@ -190,14 +185,7 @@ public class FormWorkActivity extends AppCompatActivity implements OnChartValueS
 
         mTabHost.setCurrentTab(2);
 
-        arrayList = new ArrayList<String>();
-
-        mAdapter = new DataAdapter(this, arrayList);
-
         setupCharts();
-
-        // connect to the server
-        new ConnectTask().execute("");
 
         final Handler handler = new Handler();
         Timer timer = new Timer(true);
@@ -218,7 +206,8 @@ public class FormWorkActivity extends AppCompatActivity implements OnChartValueS
                 });
             }
         };
-        timer.schedule(timerTask, 10000, 10000);;
+        timer.schedule(timerTask, 10000, 10000);
+        ;
     }
 
     @Override
@@ -376,8 +365,7 @@ public class FormWorkActivity extends AppCompatActivity implements OnChartValueS
         }
     }
 
-    private void setData(String value)
-    {
+    private void setData(String value) {
         mTime++;
 
         //Format of data
@@ -417,31 +405,5 @@ public class FormWorkActivity extends AppCompatActivity implements OnChartValueS
     @Override
     public void onNothingSelected() {
         Log.i("Nothing selected", "Nothing selected.");
-    }
-
-    public class ConnectTask extends AsyncTask<String, String, TCPClient> {
-        @Override
-        protected TCPClient doInBackground(String... message) {
-            //we create a TCPClient object and
-            mTcpClient = new TCPClient("", new MessageCallback() {
-                @Override
-                public void callbackMessageReceiver(String message) {
-                    publishProgress(message);
-                }
-            });
-            mTcpClient.run();
-
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
-
-            Log.d("onProgressUpdate", "In progress update, values: " + values.toString());
-            // notify the adapter that the data set has changed. This means that new message received
-            // from server was added to the list
-            mAdapter.notifyDataSetChanged();
-        }
     }
 }
