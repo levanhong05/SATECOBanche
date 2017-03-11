@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,6 +32,7 @@ import com.dfm.honglv.satecobanche.adapter.DataAdapter;
 import com.dfm.honglv.satecobanche.adapter.MessageCallback;
 import com.dfm.honglv.satecobanche.adapter.TCPClient;
 
+import com.dfm.honglv.satecobanche.functions.ConnectivityChangeReceiver;
 import com.dfm.honglv.satecobanche.navigation.InformationActivity;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -93,6 +95,8 @@ public class FormWorkActivity extends AppCompatActivity implements OnChartValueS
             }
         }
     };
+
+    private final ConnectivityChangeReceiver mNetworkReceiver = new ConnectivityChangeReceiver();
 
     /*
      * This handler will be passed to UsbService. Data received from serial port is displayed through this handler
@@ -239,8 +243,10 @@ public class FormWorkActivity extends AppCompatActivity implements OnChartValueS
                     startService.putExtra(key, extra);
                 }
             }
+
             startService(startService);
         }
+
         Intent bindingIntent = new Intent(this, service);
         bindService(bindingIntent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
@@ -252,7 +258,13 @@ public class FormWorkActivity extends AppCompatActivity implements OnChartValueS
         filter.addAction(USBService.ACTION_USB_DISCONNECTED);
         filter.addAction(USBService.ACTION_USB_NOT_SUPPORTED);
         filter.addAction(USBService.ACTION_USB_PERMISSION_NOT_GRANTED);
+
         registerReceiver(mUsbReceiver, filter);
+
+        final IntentFilter networkFilter = new IntentFilter();
+        networkFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+
+        registerReceiver(mNetworkReceiver, networkFilter);
     }
 
     @Override
@@ -269,6 +281,8 @@ public class FormWorkActivity extends AppCompatActivity implements OnChartValueS
 
         unregisterReceiver(mUsbReceiver);
         unbindService(usbConnection);
+
+        unregisterReceiver(mNetworkReceiver);
     }
 
     private void setupCharts() {

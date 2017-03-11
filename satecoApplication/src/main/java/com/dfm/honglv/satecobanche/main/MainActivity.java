@@ -440,6 +440,7 @@ public class MainActivity extends AppCompatActivity
         filter.addAction(USBService.ACTION_USB_DISCONNECTED);
         filter.addAction(USBService.ACTION_USB_NOT_SUPPORTED);
         filter.addAction(USBService.ACTION_USB_PERMISSION_NOT_GRANTED);
+
         registerReceiver(mUsbReceiver, filter);
     }
 
