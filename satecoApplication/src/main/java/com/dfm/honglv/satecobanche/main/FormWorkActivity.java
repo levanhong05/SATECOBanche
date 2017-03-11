@@ -1,6 +1,5 @@
 package com.dfm.honglv.satecobanche.main;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -10,7 +9,6 @@ import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -28,10 +26,6 @@ import android.widget.Toast;
 
 import com.dfm.honglv.satecobanche.R;
 
-import com.dfm.honglv.satecobanche.adapter.DataAdapter;
-import com.dfm.honglv.satecobanche.adapter.MessageCallback;
-import com.dfm.honglv.satecobanche.adapter.TCPClient;
-
 import com.dfm.honglv.satecobanche.functions.ConnectivityChangeReceiver;
 import com.dfm.honglv.satecobanche.navigation.InformationActivity;
 import com.github.mikephil.charting.charts.LineChart;
@@ -45,7 +39,10 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.Timer;
@@ -59,6 +56,8 @@ public class FormWorkActivity extends AppCompatActivity implements OnChartValueS
     private static String V_ALIGNMENT = "av";
 
     private static String PRESSURE = "p";
+
+    private String urlServer = "http://10.0.2.2:8080/TestAndroid/TestServlet";
 
     TabHost mTabHost;
 
@@ -403,8 +402,60 @@ public class FormWorkActivity extends AppCompatActivity implements OnChartValueS
                 setData(mTime, fValue);
 
                 mPressureChart.invalidate();
+
+                SendHttpRequestTask task = new SendHttpRequestTask();
+
+                String[] params = new String[]{urlServer, value};
+                task.execute(params);
             }
         }
+    }
+
+    private class SendHttpRequestTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            String url = params[0];
+            String name = params[1];
+
+            String data = sendHttpRequest(url, name);
+            System.out.println("Data [" + data + "]");
+
+            return data;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            //edtResp.setText(result);
+            //item.setActionView(null);
+        }
+    }
+
+    private String sendHttpRequest(String url, String name) {
+        StringBuffer buffer = new StringBuffer();
+
+        try {
+            System.out.println("URL [" + url + "] - Name [" + name + "]");
+
+            HttpURLConnection con = (HttpURLConnection) (new URL(url)).openConnection();
+            con.setRequestMethod("POST");
+            con.setDoInput(true);
+            con.setDoOutput(true);
+            con.connect();
+            con.getOutputStream().write(("name=" + name).getBytes());
+
+            InputStream is = con.getInputStream();
+            byte[] b = new byte[1024];
+
+            while (is.read(b) != -1) {
+                buffer.append(new String(b));
+            }
+
+            con.disconnect();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+
+        return buffer.toString();
     }
 
     @Override
