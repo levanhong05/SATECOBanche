@@ -1,23 +1,23 @@
 <resources>
     <string name="app_name">SATECO Banche</string>
 
-    <string name="action_sync">Sync data</string>
+    <string name="action_sync">Synchroniser les données</string>
     <string name="action_information">Information</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Paramètres</string>
 
-    <string name="action_add_construction">Add new construction</string>
-    <string name="action_add_formwork">Add new form work</string>
-    <string name="action_add_chip">Add new sensor</string>
+    <string name="action_add_construction">Ajouter une nouvelle construction</string>
+    <string name="action_add_formwork">Ajouter un nouveau coffrage</string>
+    <string name="action_add_chip">Ajouter un nouveau capteur</string>
 
-    <string name="heightlabel">Height</string>
+    <string name="heightlabel">Hauteur</string>
     <string name="heightvalue">0</string>
     <string name="heightunit">cm</string>
 
-    <string name="thicknesslabel">Thickness</string>
+    <string name="thicknesslabel">Epaisseur</string>
     <string name="thicknessvalue">0</string>
     <string name="thicknessunit">cm</string>
 
-    <string name="niveaulabel">Level</string>
+    <string name="niveaulabel">Niveau</string>
     <string name="niveauvalue">0</string>
     <string name="niveauunit">°</string>
 
@@ -25,26 +25,26 @@
     <string name="aplombvalue">0</string>
     <string name="aplombunit">°</string>
 
-    <string name="pressurelabel">Pressure</string>
+    <string name="pressurelabel">Pression</string>
     <string name="pressurevalue">0</string>
     <string name="pressureunit">T</string>
 
-    <string name="tabdistance">Distance sensor</string>
-    <string name="tabangle">Inclinometer</string>
-    <string name="tabpressure">Pressure sensor</string>
+    <string name="tabdistance">Capteur de distance</string>
+    <string name="tabangle">Inclinomètre</string>
+    <string name="tabpressure">Capteur de pression</string>
 
-    <string name="usb_ready">USB ready.</string>
-    <string name="usb_permission_not_granted">USB permission not granted.</string>
-    <string name="no_usb_connected">No USB connected.</string>
-    <string name="usb_disconnected">USB disconnected.</string>
-    <string name="usb_device_not_supported">USB device not supported.</string>
+    <string name="usb_ready">USB prêt.</string>
+    <string name="usb_permission_not_granted">Permission USB non accordée.</string>
+    <string name="no_usb_connected">Non USB connecté.</string>
+    <string name="usb_disconnected">USB déconnecté.</string>
+    <string name="usb_device_not_supported">Périphérique USB non pris en charge.</string>
 
-    <string name="found_wifi_network">Found wifi network.</string>
-    <string name="found_mobile_internet_network">Found mobile internet network.</string>
-    <string name="no_wifi_or_3g_enabled">No wifi or 3G enabled.</string>
+    <string name="found_wifi_network">Réseau wifi trouvé.</string>
+    <string name="found_mobile_internet_network">Réseau mobile trouvé.</string>
+    <string name="no_wifi_or_3g_enabled">Pas de wifi ou 3G activé.</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open">Ouvrir le tiroir de navigation</string>
+    <string name="navigation_drawer_close">Fermer le tiroir de navigation</string>
 
     <string name="nav_desciption">dfm-engineering.com</string>
     <string name="nav_img_desciption">Image description</string>

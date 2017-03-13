@@ -6,8 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 import android.widget.Toast;
+
+import com.dfm.honglv.satecobanche.R;
 
 /**
  * Created by honglv on 11/03/2017.
@@ -35,16 +36,16 @@ public class ConnectivityChangeReceiver extends BroadcastReceiver {
         if (activeNetwork != null) { // connected to the internet
             if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
                 // connected to wifi
-                Toast.makeText(context, "Found WI-FI Network.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.found_wifi_network, Toast.LENGTH_SHORT).show();
                 val = true;
             } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
                 // connected to the mobile provider's data plan
-                Toast.makeText(context, "Found Mobile Internet Network.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.found_mobile_internet_network, Toast.LENGTH_SHORT).show();
                 val = true;
             }
         } else {
             // not connected to the internet
-            Toast.makeText(context, "No Wifi or 3G enabled.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.no_wifi_or_3g_enabled, Toast.LENGTH_SHORT).show();
         }
 
         return val;

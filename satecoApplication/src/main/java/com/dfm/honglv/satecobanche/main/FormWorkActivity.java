@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
@@ -17,6 +19,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,6 +47,7 @@ import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -57,7 +61,7 @@ public class FormWorkActivity extends AppCompatActivity implements OnChartValueS
 
     private static String PRESSURE = "p";
 
-    private String urlServer = "http://10.0.2.2:8080/TestAndroid/TestServlet";
+    private String urlServer = "http://192.168.1.1/sateco_server/test_server";
 
     TabHost mTabHost;
 
@@ -77,19 +81,19 @@ public class FormWorkActivity extends AppCompatActivity implements OnChartValueS
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
                 case USBService.ACTION_USB_PERMISSION_GRANTED: // USB PERMISSION GRANTED
-                    Toast.makeText(context, "USB Ready", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getString(R.string.usb_ready), Toast.LENGTH_SHORT).show();
                     break;
                 case USBService.ACTION_USB_PERMISSION_NOT_GRANTED: // USB PERMISSION NOT GRANTED
-                    Toast.makeText(context, "USB Permission not granted", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getString(R.string.usb_permission_not_granted), Toast.LENGTH_SHORT).show();
                     break;
                 case USBService.ACTION_NO_USB: // NO USB CONNECTED
-                    Toast.makeText(context, "No USB connected", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getString(R.string.no_usb_connected), Toast.LENGTH_SHORT).show();
                     break;
                 case USBService.ACTION_USB_DISCONNECTED: // USB DISCONNECTED
-                    Toast.makeText(context, "USB disconnected", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getString(R.string.usb_disconnected), Toast.LENGTH_SHORT).show();
                     break;
                 case USBService.ACTION_USB_NOT_SUPPORTED: // USB NOT SUPPORTED
-                    Toast.makeText(context, "USB device not supported", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getString(R.string.usb_device_not_supported), Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -155,6 +159,12 @@ public class FormWorkActivity extends AppCompatActivity implements OnChartValueS
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_formwork);
 
+        Resources resources = getResources();
+        Configuration configuration = resources.getConfiguration();
+        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+        configuration.setLocale(new Locale("fr"));
+        resources.updateConfiguration(configuration, displayMetrics);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -171,19 +181,19 @@ public class FormWorkActivity extends AppCompatActivity implements OnChartValueS
         //Tab 1
         TabHost.TabSpec spec = mTabHost.newTabSpec("Distance");
         spec.setContent(R.id.activity_distance_line_chart);
-        spec.setIndicator("Capteur de distance");
+        spec.setIndicator(getString(R.string.tabdistance));
         mTabHost.addTab(spec);
 
         //Tab 2
         spec = mTabHost.newTabSpec("Angle");
         spec.setContent(R.id.activity_angle_line_chart);
-        spec.setIndicator("Inclinomètre");
+        spec.setIndicator(getString(R.string.tabangle));
         mTabHost.addTab(spec);
 
         //Tab 3
         spec = mTabHost.newTabSpec("Pressure");
         spec.setContent(R.id.activity_pressure_line_chart);
-        spec.setIndicator("Capteur de pression");
+        spec.setIndicator(getString(R.string.tabpressure));
         mTabHost.addTab(spec);
 
         mTabHost.setCurrentTab(2);
@@ -200,7 +210,7 @@ public class FormWorkActivity extends AppCompatActivity implements OnChartValueS
                     public void run() {
                         mTime++;
 
-                        float value = (float) (Math.random() * 1000) + 50;
+                        float value = (float) (Math.random() * 30);
                         mPressureValue.setText("" + (value));
                         setData(mTime, value);
 
@@ -269,6 +279,12 @@ public class FormWorkActivity extends AppCompatActivity implements OnChartValueS
     @Override
     protected void onResume() {
         super.onResume();
+
+        Resources resources = getResources();
+        Configuration configuration = resources.getConfiguration();
+        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+        configuration.setLocale(new Locale("fr"));
+        resources.updateConfiguration(configuration, displayMetrics);
 
         setFilters();  // Start listening notifications from USBService
         startService(USBService.class, usbConnection, null); // Start USBService(if it was not started before) and Bind it
