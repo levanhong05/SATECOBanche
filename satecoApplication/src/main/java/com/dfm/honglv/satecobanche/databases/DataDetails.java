@@ -29,10 +29,6 @@ public class DataDetails implements Serializable {
     @DatabaseField(columnName = "value")
     public String value;
 
-    // Foreign key defined to hold associations
-    @DatabaseField(canBeNull = false, foreign = true)
-    public ChipDetails chip;
-
     // Define a String type field to hold student's date of insertion
     @DatabaseField(columnName = "added_date")
     public Date addedDate;
@@ -43,10 +39,9 @@ public class DataDetails implements Serializable {
     }
 
     //For our own purpose, so it's easier to create a StudentDetails object
-    public DataDetails(final String key, final String value, ChipDetails chip){
+    public DataDetails(final String key, final String value){
         this.addedDate = new Date();
         this.key = key;
         this.value = value;
-        this.chip = chip;
     }
 }

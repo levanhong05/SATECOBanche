@@ -1,68 +1,3 @@
-# --table-start--
-dataClass=com.dfm.honglv.satecobanche.databases.ConstructionDetails
-tableName=construction_details
-# --table-fields-start--
-# --field-start--
-fieldName=constructionId
-columnName=construction_id
-generatedId=true
-# --field-end--
-# --field-start--
-fieldName=constructionName
-columnName=construction_name
-# --field-end--
-# --field-start--
-fieldName=latitude
-# --field-end--
-# --field-start--
-fieldName=longitude
-# --field-end--
-# --table-fields-end--
-# --table-end--
-#################################
-
-#################################
-# --table-start--
-dataClass=com.dfm.honglv.satecobanche.databases.FormWorkDetails
-tableName=formwork_details
-# --table-fields-start--
-# --field-start--
-fieldName=formworkId
-columnName=formwork_id
-generatedId=true
-# --field-end--
-# --field-start--
-fieldName=formworkName
-columnName=formwork_name
-# --field-end--
-# --field-start--
-fieldName=construction
-columnName=construction_id
-foreign=true
-# --field-end--
-# --table-fields-end--
-# --table-end--
-#################################
-
-#################################
-# --table-start--
-dataClass=com.dfm.honglv.satecobanche.databases.ChipDetails
-tableName=chip_details
-# --table-fields-start--
-# --field-start--
-fieldName=chipId
-columnName=chip_id
-generatedId=true
-# --field-end--
-# --field-start--
-fieldName=formwork
-columnName=formwork_id
-foreign=true
-# --field-end--
-# --table-fields-end--
-# --table-end--
-#################################
-
 #################################
 # --table-start--
 dataClass=com.dfm.honglv.satecobanche.databases.DataDetails
@@ -84,11 +19,6 @@ columnName=key
 # --field-start--
 fieldName=value
 columnName=value
-# --field-end--
-# --field-start--
-fieldName=chip
-columnName=chip_id
-foreign=true
 # --field-end--
 # --table-fields-end--
 # --table-end--

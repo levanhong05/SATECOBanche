@@ -4,8 +4,6 @@
 
     <uses-sdk android:minSdkVersion="14" />
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
@@ -34,40 +32,12 @@
         <activity
             android:name=".main.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-
-                <!--
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-                -->
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-                android:resource="@xml/device_filter" />
-        </activity>
-        <activity
-            android:name=".main.FormWorkActivity"
-            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" >
             <intent-filter>
-                <action android:name="com.dfm.honglv.satecobanche.main.FormWorkActivity" />
+                <action android:name="com.dfm.honglv.satecobanche.main.MainActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
-
-                <!--
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-                -->
             </intent-filter>
         </activity>
         <activity
@@ -78,15 +48,18 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
         </activity>
         <activity android:name=".widgets.PressureLineChartActivity" />
         <activity android:name=".widgets.DistanceLineChartActivity" />
         <activity android:name=".widgets.AngleLineChartActivity" />
-        <activity
-            android:name=".functions.AddConstructionActivity"
-            android:theme="@style/AppTheme.PopupWindowTheme" />
-        <activity android:name=".navigation.ViewConstructionRecordActivity" />
-        <activity android:name=".navigation.ViewConstructionDetailsActivity" />
 
         <service
             android:name=".main.USBService"
@@ -100,14 +73,6 @@
         </receiver>
 
         <activity
-            android:name=".navigation.SettingsActivity"
-            android:parentActivityName=".main.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.dfm.honglv.satecobanche.main.MainActivity" />
-        </activity>
-        <activity android:name=".main.ChooseFormWorkActivity" />
-        <activity
             android:name=".navigation.InformationActivity"
             android:label="Information"
             android:parentActivityName=".main.MainActivity">
@@ -115,16 +80,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.dfm.honglv.satecobanche.main.MainActivity" />
         </activity>
-        <activity
-            android:name=".functions.AddFormWorkActivity"
-            android:theme="@style/AppTheme.PopupWindowTheme" />
-        <activity
-            android:name=".functions.AddChipActivity"
-            android:theme="@style/AppTheme.PopupWindowTheme" />
 
         <service
             android:name=".functions.NetworkService"
-            android:exported="false"></service>
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

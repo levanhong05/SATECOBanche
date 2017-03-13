@@ -20,9 +20,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final String DATABASE_NAME = "sateco.db";
     private static final int DATABASE_VERSION = 1;
 
-    private Dao<ConstructionDetails, Integer> mContructionDao;
-    private Dao<FormWorkDetails, Integer> mFormworkDao;
-    private Dao<ChipDetails, Integer> mChipDao;
     private Dao<DataDetails, Integer> mDataDao;
 
     public DatabaseHelper(Context context) {
@@ -38,13 +35,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         try {
 
             // Create tables. This onCreate() method will be invoked only once of the application life time i.e. the first time when the application starts.
-            TableUtils.createTable(connectionSource, ConstructionDetails.class);
-            TableUtils.createTable(connectionSource, FormWorkDetails.class);
-            TableUtils.createTable(connectionSource, ChipDetails.class);
             TableUtils.createTable(connectionSource, DataDetails.class);
 
         } catch (SQLException e) {
-            Log.e(DatabaseHelper.class.getName(), "Unable to create datbases", e);
+            Log.e(DatabaseHelper.class.getName(), "Unable to create databases", e);
         }
     }
 
@@ -56,9 +50,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             //automatically. Developer needs to handle the upgrade logic here, i.e. create a new table or a new column to an existing table, take the backups of the
             // existing database etc.
 
-            TableUtils.dropTable(connectionSource, ConstructionDetails.class, true);
-            TableUtils.dropTable(connectionSource, FormWorkDetails.class, true);
-            TableUtils.dropTable(connectionSource, ChipDetails.class, true);
             TableUtils.dropTable(connectionSource, DataDetails.class, true);
             onCreate(sqliteDatabase, connectionSource);
 
@@ -70,30 +61,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     // Create the getDao methods of all database tables to access those from android code.
     // Insert, delete, read, update everything will be happened through DAOs
-
-    public Dao<ConstructionDetails, Integer> getConstructionDao() throws SQLException {
-        if (mContructionDao == null) {
-            mContructionDao = getDao(ConstructionDetails.class);
-        }
-
-        return mContructionDao;
-    }
-
-    public Dao<FormWorkDetails, Integer> getFormworkDao() throws SQLException {
-        if (mFormworkDao == null) {
-            mFormworkDao = getDao(FormWorkDetails.class);
-        }
-
-        return mFormworkDao;
-    }
-
-    public Dao<ChipDetails, Integer> getChipDao() throws SQLException {
-        if (mChipDao == null) {
-            mChipDao = getDao(ChipDetails.class);
-        }
-
-        return mChipDao;
-    }
 
     public Dao<DataDetails, Integer> getDataDao() throws SQLException {
         if (mDataDao == null) {

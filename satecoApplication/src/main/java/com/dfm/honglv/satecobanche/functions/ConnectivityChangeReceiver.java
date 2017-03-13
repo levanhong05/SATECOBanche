@@ -15,8 +15,6 @@ import com.dfm.honglv.satecobanche.R;
  */
 
 public class ConnectivityChangeReceiver extends BroadcastReceiver {
-    private final static String TAG = "NetworkChecker";
-
     @Override
     public void onReceive(Context context, Intent intent) {
 

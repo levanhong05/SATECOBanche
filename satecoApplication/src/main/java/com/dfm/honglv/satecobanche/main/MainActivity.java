@@ -6,71 +6,76 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
-import android.location.Location;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.SystemClock;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.PopupMenu;
+import android.widget.TabHost;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dfm.honglv.satecobanche.R;
-import com.dfm.honglv.satecobanche.databases.ConstructionDetails;
-import com.dfm.honglv.satecobanche.databases.DatabaseHelper;
-import com.dfm.honglv.satecobanche.functions.AddChipActivity;
-import com.dfm.honglv.satecobanche.functions.AddConstructionActivity;
-import com.dfm.honglv.satecobanche.functions.AddFormWorkActivity;
+
+import com.dfm.honglv.satecobanche.functions.ConnectivityChangeReceiver;
 import com.dfm.honglv.satecobanche.navigation.InformationActivity;
-import com.dfm.honglv.satecobanche.navigation.SettingsActivity;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.PreparedQuery;
-import com.j256.ormlite.stmt.QueryBuilder;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,
-        OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        GoogleMap.OnMarkerDragListener,
-        GoogleMap.OnMapLongClickListener,
-        GoogleMap.OnMarkerClickListener,
-        View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements OnChartValueSelectedListener {
+    private static String H_DISTANCE = "dh";
+    private static String V_DISTANCE = "dv";
 
-    private static final int ADD_CONSTRUCTION_ACTIVITY_RESULT_CODE = 0;
+    private static String H_ALIGNMENT = "ah";
+    private static String V_ALIGNMENT = "av";
+
+    private static String PRESSURE = "p";
+
+    private String urlServer = "http://192.168.1.1/sateco_server/test_server";
+
+    TabHost mTabHost;
+
+    private LineChart mPressureChart;
+    private TextView mPressureValue;
+
+    LineDataSet pressureDataset;
+    ArrayList<Entry> pressureValue;
+
+    private int mTime = 0;
+
+    protected Typeface mTfRegular;
+    protected Typeface mTfLight;
+
     /*
      * Notifications from UsbService will be received here.
     */
@@ -79,71 +84,25 @@ public class MainActivity extends AppCompatActivity
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
                 case USBService.ACTION_USB_PERMISSION_GRANTED: // USB PERMISSION GRANTED
-                    Toast.makeText(context, "USB Ready", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getString(R.string.usb_ready), Toast.LENGTH_SHORT).show();
                     break;
                 case USBService.ACTION_USB_PERMISSION_NOT_GRANTED: // USB PERMISSION NOT GRANTED
-                    Toast.makeText(context, "USB Permission not granted", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getString(R.string.usb_permission_not_granted), Toast.LENGTH_SHORT).show();
                     break;
                 case USBService.ACTION_NO_USB: // NO USB CONNECTED
-                    Toast.makeText(context, "No USB connected", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getString(R.string.no_usb_connected), Toast.LENGTH_SHORT).show();
                     break;
                 case USBService.ACTION_USB_DISCONNECTED: // USB DISCONNECTED
-                    Toast.makeText(context, "USB disconnected", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getString(R.string.usb_disconnected), Toast.LENGTH_SHORT).show();
                     break;
                 case USBService.ACTION_USB_NOT_SUPPORTED: // USB NOT SUPPORTED
-                    Toast.makeText(context, "USB device not supported", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getString(R.string.usb_device_not_supported), Toast.LENGTH_SHORT).show();
                     break;
             }
         }
     };
 
-    int numberConstruction;
-
-    private GoogleMap mMap;
-    private GoogleApiClient mGoogleApiClient;
-
-    private double mLongitude;
-    private double mLatitude;
-
-    private FloatingActionButton fabAdd;
-
-    // Reference of DatabaseHelper class to access its DAOs and other components
-    private DatabaseHelper databaseHelper = null;
-
-    private USBService usbService;
-
-    private USBHandler mHandler;
-    private final ServiceConnection usbConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName arg0, IBinder arg1) {
-            usbService = ((USBService.UsbBinder) arg1).getService();
-            usbService.setHandler(mHandler);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            usbService = null;
-        }
-    };
-
-    private static final int MESSAGE_SEND_DATA = 101;
-    private static final long REFRESH_TIMEOUT_MILLIS = 5000;
-
-    private final Handler mDataHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MESSAGE_SEND_DATA:
-                    onSendData();
-                    mDataHandler.sendEmptyMessageDelayed(MESSAGE_SEND_DATA, REFRESH_TIMEOUT_MILLIS);
-                    break;
-                default:
-                    super.handleMessage(msg);
-                    break;
-            }
-        }
-
-    };
+    private final ConnectivityChangeReceiver mNetworkReceiver = new ConnectivityChangeReceiver();
 
     /*
      * This handler will be passed to UsbService. Data received from serial port is displayed through this handler
@@ -163,6 +122,7 @@ public class MainActivity extends AppCompatActivity
                     Log.d("", String.format("R: %s", data));
                     Toast.makeText(mActivity.get(), String.format("R: %s", data), Toast.LENGTH_SHORT).show();
                     //mActivity.get().display.append(data);
+                    mActivity.get().setData(data);
                     break;
                 case USBService.CTS_CHANGE:
                     Toast.makeText(mActivity.get(), "CTS_CHANGE", Toast.LENGTH_LONG).show();
@@ -175,246 +135,114 @@ public class MainActivity extends AppCompatActivity
                     Log.d("", String.format("RS: %s", buffer));
                     Toast.makeText(mActivity.get(), String.format("RS: %s", buffer), Toast.LENGTH_SHORT).show();
                     //mActivity.get().display.append(buffer);
+                    mActivity.get().setData(buffer);
                     break;
             }
         }
     }
+
+    private USBService usbService;
+
+    private USBHandler mHandler;
+    private final ServiceConnection usbConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName arg0, IBinder arg1) {
+            usbService = ((USBService.UsbBinder) arg1).getService();
+            usbService.setHandler(mHandler);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            usbService = null;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mHandler = new USBHandler(this);
+        Resources resources = getResources();
+        Configuration configuration = resources.getConfiguration();
+        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+        configuration.setLocale(new Locale("fr"));
+        resources.updateConfiguration(configuration, displayMetrics);
 
-        fabAdd = (FloatingActionButton) findViewById(R.id.fab);
+        mHandler = new USBHandler(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        fabAdd.setOnClickListener(clickListener);
+        toolbar.setNavigationIcon(R.mipmap.ic_launcher);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+        mTabHost = (TabHost) findViewById(R.id.tabHost);
+        mTabHost.setup();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        mTfRegular = Typeface.createFromAsset(getAssets(), "OpenSans-Regular.ttf");
+        mTfLight = Typeface.createFromAsset(getAssets(), "OpenSans-Light.ttf");
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        //Tab 1
+        TabHost.TabSpec spec = mTabHost.newTabSpec("Distance");
+        spec.setContent(R.id.activity_distance_line_chart);
+        spec.setIndicator(getString(R.string.tabdistance));
+        mTabHost.addTab(spec);
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
+        //Tab 2
+        spec = mTabHost.newTabSpec("Angle");
+        spec.setContent(R.id.activity_angle_line_chart);
+        spec.setIndicator(getString(R.string.tabangle));
+        mTabHost.addTab(spec);
 
-    private void onSendData() {
-        new AsyncTask<Void, Void, String>() {
+        //Tab 3
+        spec = mTabHost.newTabSpec("Pressure");
+        spec.setContent(R.id.activity_pressure_line_chart);
+        spec.setIndicator(getString(R.string.tabpressure));
+        mTabHost.addTab(spec);
+
+        mTabHost.setCurrentTab(2);
+
+        setupCharts();
+
+        final Handler handler = new Handler();
+        Timer timer = new Timer(true);
+        TimerTask timerTask = new TimerTask() {
             @Override
-            protected String doInBackground(Void... params) {
-                SystemClock.sleep(1000);
+            public void run() {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mTime++;
 
-                return "";
-            }
+                        float value = (float) (Math.random() * 30);
+                        mPressureValue.setText("" + (value));
+                        setData(mTime, value);
 
-            @Override
-            protected void onPostExecute(String result) {
-                if (usbService != null) { // if UsbService was correctly binded, Send data
-                    String date = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
-                    result = date + ": Hi arduino\n";
-
-                    usbService.write(result.getBytes());
-
-                    Toast.makeText(MainActivity.this, String.format("S: %s", result), Toast.LENGTH_SHORT).show();
-                }
-            }
-        }.execute((Void) null);
-    }
-
-    private View.OnClickListener clickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            PopupMenu popup = new PopupMenu(MainActivity.this, v);
-
-            popup.getMenuInflater().inflate(R.menu.add_menu, popup.getMenu());
-
-            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                public boolean onMenuItemClick(MenuItem item) {
-
-                    int id = item.getItemId();
-
-                    switch (id) {
-                        case R.id.add_construction: {
-                            Intent intent = new Intent(MainActivity.this, AddConstructionActivity.class);
-
-                            //intent.putExtra("latitude", latLng.latitude);
-                            //intent.putExtra("longitude", latLng.longitude);
-
-                            startActivity(intent);
-                            startActivityForResult(intent, ADD_CONSTRUCTION_ACTIVITY_RESULT_CODE);
-
-                            break;
-                        }
-
-                        case R.id.add_formwork: {
-                            Intent intent = new Intent(MainActivity.this, AddFormWorkActivity.class);
-
-                            startActivity(intent);
-
-                            break;
-                        }
-
-                        case R.id.add_chip: {
-                            Intent intent = new Intent(MainActivity.this, AddChipActivity.class);
-
-                            startActivity(intent);
-
-                            break;
-                        }
+                        mPressureChart.invalidate();
                     }
-
-                    return true;
-                }
-            });
-
-            popup.show();
-        }
-    };
-
-    // This is how, DatabaseHelper can be initialized for future use
-    private DatabaseHelper getHelper() {
-        if (databaseHelper == null) {
-            databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
-        }
-        return databaseHelper;
-    }
-
-    // This method is called when the second activity finishes
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // check that it is the SecondActivity with an OK result
-        if (requestCode == ADD_CONSTRUCTION_ACTIVITY_RESULT_CODE) {
-            if (resultCode == RESULT_OK) {
-                // get String data from Intent
-                String constructionName = data.getStringExtra("constructionName");
-                mLatitude = data.getDoubleExtra("latitude", 0);
-                mLongitude = data.getDoubleExtra("longitude", 0);
-
-                moveMap();
+                });
             }
-        }
+        };
+        timer.schedule(timerTask, 10000, 10000);
+        ;
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-
-        try {
-            // Declaration of DAO to interact with corresponding table
-            Dao<ConstructionDetails, Integer> constructionDao = getHelper().getConstructionDao();
-
-            // Query the database. We need all the records so, used queryForAll()
-            // It holds the list of ConstructionDetails object fetched from Database
-            List<ConstructionDetails> constructionList = constructionDao.queryForAll();
-
-            // Iterate through the FormWorkDetails object iterator and populate the comma separated String
-            for (ConstructionDetails construction : constructionList) {
-                numberConstruction++;
-
-                LatLng latLg = new LatLng(construction.latitude, construction.longitude);
-                mMap.addMarker(new MarkerOptions().position(latLg).title(construction.constructionName)).setTag(construction.constructionId);
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLg));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-
-        mMap.setOnMarkerDragListener(this);
-        mMap.setOnMapLongClickListener(this);
-        mMap.setOnMarkerClickListener(this);
-    }
-
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        switch (id) {
-            case R.id.nav_sync: {
-                Toast.makeText(getApplicationContext(), "Sync data!",
-                        Toast.LENGTH_SHORT).show();
-                break;
-            }
-
-            case R.id.nav_info: {
-                Intent intent = new Intent(MainActivity.this, InformationActivity.class);
-                startActivity(intent);
-                break;
-            }
-
-            case R.id.nav_settings: {
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
-
-                break;
-            }
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
         return true;
     }
 
-    //Getting current location
-    private void getCurrentLocation() {
-        //mMap.clear();
-
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.toolbar_info:
+                Intent intent = new Intent(MainActivity.this, InformationActivity.class);
+                startActivity(intent);
+                break;
         }
 
-        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
-        if (location != null) {
-            //Getting mLongitude and mLatitude
-            mLongitude = location.getLongitude();
-            mLatitude = location.getLatitude();
-
-            //moving the map to location
-            moveMap();
-        }
-    }
-
-    private void moveMap() {
-        LatLng latLng = new LatLng(mLatitude, mLongitude);
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-        mMap.getUiSettings().setZoomControlsEnabled(true);
+        return true;
     }
 
     private void startService(Class<?> service, ServiceConnection serviceConnection, Bundle extras) {
@@ -427,28 +255,39 @@ public class MainActivity extends AppCompatActivity
                     startService.putExtra(key, extra);
                 }
             }
+
             startService(startService);
         }
+
         Intent bindingIntent = new Intent(this, service);
         bindService(bindingIntent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     private void setFilters() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(USBService.ACTION_USB_PERMISSION_GRANTED);
-        filter.addAction(USBService.ACTION_NO_USB);
-        filter.addAction(USBService.ACTION_USB_DISCONNECTED);
-        filter.addAction(USBService.ACTION_USB_NOT_SUPPORTED);
-        filter.addAction(USBService.ACTION_USB_PERMISSION_NOT_GRANTED);
+        IntentFilter usbFilter = new IntentFilter();
+        usbFilter.addAction(USBService.ACTION_USB_PERMISSION_GRANTED);
+        usbFilter.addAction(USBService.ACTION_NO_USB);
+        usbFilter.addAction(USBService.ACTION_USB_DISCONNECTED);
+        usbFilter.addAction(USBService.ACTION_USB_NOT_SUPPORTED);
+        usbFilter.addAction(USBService.ACTION_USB_PERMISSION_NOT_GRANTED);
 
-        registerReceiver(mUsbReceiver, filter);
+        registerReceiver(mUsbReceiver, usbFilter);
+
+        final IntentFilter networkFilter = new IntentFilter();
+        networkFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+
+        registerReceiver(mNetworkReceiver, networkFilter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        mDataHandler.sendEmptyMessage(MESSAGE_SEND_DATA);
+        Resources resources = getResources();
+        Configuration configuration = resources.getConfiguration();
+        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+        configuration.setLocale(new Locale("fr"));
+        resources.updateConfiguration(configuration, displayMetrics);
 
         setFilters();  // Start listening notifications from USBService
         startService(USBService.class, usbConnection, null); // Start USBService(if it was not started before) and Bind it
@@ -458,124 +297,197 @@ public class MainActivity extends AppCompatActivity
     protected void onPause() {
         super.onPause();
 
-        mDataHandler.removeMessages(MESSAGE_SEND_DATA);
-
         unregisterReceiver(mUsbReceiver);
         unbindService(usbConnection);
+
+        unregisterReceiver(mNetworkReceiver);
     }
 
-    @Override
-    public void onClick(View view) {
-        Toast.makeText(getApplicationContext(), "onViewClick", Toast.LENGTH_SHORT).show();
+    private void setupCharts() {
+        pressureValue = new ArrayList<Entry>();
+
+        mPressureValue = (TextView) findViewById(R.id.pressurevalue);
+
+        mPressureChart = (LineChart) findViewById(R.id.chartPressure);
+        mPressureChart.setOnChartValueSelectedListener(this);
+
+        // no description text
+        mPressureChart.getDescription().setEnabled(false);
+
+        // enable touch gestures
+        mPressureChart.setTouchEnabled(true);
+
+        mPressureChart.setDragDecelerationFrictionCoef(0.9f);
+
+        // enable scaling and dragging
+        mPressureChart.setDragEnabled(true);
+        mPressureChart.setScaleEnabled(true);
+        mPressureChart.setDrawGridBackground(false);
+        mPressureChart.setHighlightPerDragEnabled(true);
+
+        // if disabled, scaling can be done on x- and y-axis separately
+        mPressureChart.setPinchZoom(true);
+
+        // set an alternative background color
+        mPressureChart.setBackgroundColor(Color.LTGRAY);
+
+        // add data
+        setData(0, 0);
+
+        mPressureChart.animateX(2500);
+
+        // get the legend (only possible after setting data)
+        Legend legend = mPressureChart.getLegend();
+
+        // modify the legend ...
+        legend.setForm(Legend.LegendForm.LINE);
+        legend.setTypeface(mTfLight);
+        legend.setTextSize(11f);
+        legend.setTextColor(Color.WHITE);
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        legend.setDrawInside(false);
+
+        XAxis xAxis = mPressureChart.getXAxis();
+        xAxis.setTypeface(mTfLight);
+        xAxis.setTextSize(11f);
+        xAxis.setTextColor(Color.WHITE);
+        xAxis.setDrawGridLines(true);
+        xAxis.setDrawAxisLine(true);
+
+        YAxis leftAxis = mPressureChart.getAxisLeft();
+        leftAxis.setTypeface(mTfLight);
+        leftAxis.setTextColor(ColorTemplate.getHoloBlue());
+        leftAxis.setDrawGridLines(true);
+        leftAxis.setGranularityEnabled(true);
+
+        mPressureChart.getAxisRight().setEnabled(false);
     }
 
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        getCurrentLocation();
+    private void setData(int time, float value) {
+        pressureValue.add(new Entry(time, value));
+
+        if (mPressureChart.getData() != null && mPressureChart.getData().getDataSetCount() > 0) {
+            pressureDataset = (LineDataSet) mPressureChart.getData().getDataSetByIndex(0);
+            pressureDataset.setValues(pressureValue);
+            mPressureChart.getData().notifyDataChanged();
+            mPressureChart.notifyDataSetChanged();
+        } else {
+            // create a dataset and give it a type
+            pressureDataset = new LineDataSet(pressureValue, "Pression");
+
+            pressureDataset.setAxisDependency(YAxis.AxisDependency.LEFT);
+            pressureDataset.setColor(ColorTemplate.getHoloBlue());
+            pressureDataset.setCircleColor(Color.WHITE);
+            pressureDataset.setLineWidth(2f);
+            pressureDataset.setCircleRadius(3f);
+            pressureDataset.setFillAlpha(65);
+            pressureDataset.setFillColor(ColorTemplate.getHoloBlue());
+            pressureDataset.setHighLightColor(Color.rgb(244, 117, 117));
+            pressureDataset.setDrawCircleHole(false);
+
+            // create a data object with the datasets
+            LineData data = new LineData(pressureDataset);
+            data.setValueTextColor(Color.WHITE);
+            data.setValueTextSize(9f);
+
+            // set data
+            mPressureChart.setData(data);
+        }
     }
 
-    @Override
-    public void onConnectionSuspended(int i) {
+    private void setData(String value) {
+        mTime++;
 
+        //Format of data
+        //SensorID MessageID FieldKey value (ex: 123 102010 p 658)
+
+        float fValue = 0;
+
+        String[] values = value.split(" ");
+
+        if (values.length >= 4) {
+            if (values[values.length - 2] == H_DISTANCE) {
+
+            } else if (values[values.length - 2] == V_DISTANCE) {
+
+            } else if (values[values.length - 2] == H_ALIGNMENT) {
+
+            } else if (values[values.length - 2] == V_ALIGNMENT) {
+
+            } else if (values[values.length - 2] == PRESSURE) {
+                mPressureValue.setText("" + fValue);
+                setData(mTime, fValue);
+
+                mPressureChart.invalidate();
+
+                SendHttpRequestTask task = new SendHttpRequestTask();
+
+                String[] params = new String[]{urlServer, value};
+                task.execute(params);
+            }
+        }
     }
 
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+    private class SendHttpRequestTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            String url = params[0];
+            String name = params[1];
 
+            String data = sendHttpRequest(url, name);
+            System.out.println("Data [" + data + "]");
+
+            return data;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            //edtResp.setText(result);
+            //item.setActionView(null);
+        }
     }
 
-    @Override
-    public void onMapLongClick(LatLng latLng) {
-        numberConstruction++;
-
-        mMap.addMarker(new MarkerOptions().position(latLng).draggable(true)).setTag(numberConstruction);
-
-        Intent intent = new Intent(MainActivity.this, AddConstructionActivity.class);
-
-        intent.putExtra("mLatitude", latLng.latitude);
-        intent.putExtra("mLongitude", latLng.longitude);
-
-        startActivity(intent);
-    }
-
-    @Override
-    public void onMarkerDragStart(Marker marker) {
-        Toast.makeText(getApplicationContext(), "onMarkerDragStart", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onMarkerDrag(Marker marker) {
-        Toast.makeText(getApplicationContext(), "onMarkerDrag", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onMarkerDragEnd(Marker marker) {
-        // getting the Coordinates
-        mLatitude = marker.getPosition().latitude;
-        mLongitude = marker.getPosition().longitude;
-
-        //move to current position
-        moveMap();
-    }
-
-    @Override
-    protected void onStart() {
-        mGoogleApiClient.connect();
-        super.onStart();
-    }
-
-    @Override
-    protected void onStop() {
-        mGoogleApiClient.disconnect();
-        super.onStop();
-    }
-
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        int id = Integer.parseInt(marker.getTag().toString());
-
-        String name = "";
-        double latitude = marker.getPosition().latitude;
-        double longitude = marker.getPosition().longitude;
+    private String sendHttpRequest(String url, String name) {
+        StringBuffer buffer = new StringBuffer();
 
         try {
-            // Declaration of DAO to interact with corresponding table
-            Dao<ConstructionDetails, Integer> constructionDao = getHelper().getConstructionDao();
+            System.out.println("URL [" + url + "] - Name [" + name + "]");
 
-            // Get our query builder from the DAO
-            final QueryBuilder<ConstructionDetails, Integer> queryBuilder = constructionDao.queryBuilder();
+            HttpURLConnection con = (HttpURLConnection) (new URL(url)).openConnection();
+            con.setRequestMethod("POST");
+            con.setDoInput(true);
+            con.setDoOutput(true);
+            con.connect();
+            con.getOutputStream().write(("name=" + name).getBytes());
 
-            queryBuilder.where().eq(ConstructionDetails.CONSTRUCTION_ID_FIELD, id);
+            InputStream is = con.getInputStream();
+            byte[] b = new byte[1024];
 
-            // Prepare our SQL statement
-            final PreparedQuery<ConstructionDetails> preparedQuery = queryBuilder.prepare();
-
-            // Fetch the list from Database by querying it
-            // It holds the list of ConstructionDetails object fetched from Database
-            List<ConstructionDetails> constructionList = constructionDao.query(preparedQuery);
-
-            if (!constructionList.isEmpty()) {
-                id = constructionList.get(0).constructionId;
-                name = constructionList.get(0).constructionName;
+            while (is.read(b) != -1) {
+                buffer.append(new String(b));
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+            con.disconnect();
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
 
-        if (id != -1) {
-            marker.setTitle(name);
-            Intent intent = new Intent(MainActivity.this, ChooseFormWorkActivity.class);
+        return buffer.toString();
+    }
 
-            intent.putExtra("constructionId", id);
-            intent.putExtra("constructionName", name);
-            intent.putExtra("latitude", latitude);
-            intent.putExtra("longitude", longitude);
+    @Override
+    public void onValueSelected(Entry e, Highlight h) {
+        Log.i("Entry selected", e.toString());
 
-            startActivity(intent);
-        } else {
-            Toast.makeText(getApplicationContext(), "Construction is invalid!", Toast.LENGTH_SHORT).show();
-        }
+        mPressureChart.centerViewToAnimated(e.getX(), e.getY(),
+                mPressureChart.getData().getDataSetByIndex(h.getDataSetIndex()).getAxisDependency(),
+                500);
+    }
 
-        return true;
+    @Override
+    public void onNothingSelected() {
+        Log.i("Nothing selected", "Nothing selected.");
     }
 }
