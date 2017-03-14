@@ -35,9 +35,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+                <include layout="@layout/activity_pressure_line_chart" />
+
                 <include layout="@layout/activity_angle_line_chart" />
                 <include layout="@layout/activity_distance_line_chart" />
-                <include layout="@layout/activity_pressure_line_chart" />
 
             </FrameLayout>
         </LinearLayout>

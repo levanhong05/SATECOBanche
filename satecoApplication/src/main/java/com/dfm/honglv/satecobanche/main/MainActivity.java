@@ -29,6 +29,8 @@ import android.widget.Toast;
 
 import com.dfm.honglv.satecobanche.R;
 
+import com.dfm.honglv.satecobanche.databases.DataDetails;
+import com.dfm.honglv.satecobanche.databases.DatabaseHelper;
 import com.dfm.honglv.satecobanche.functions.ConnectivityChangeReceiver;
 import com.dfm.honglv.satecobanche.navigation.InformationActivity;
 import com.github.mikephil.charting.charts.LineChart;
@@ -41,12 +43,19 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.Dao;
 
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.Timer;
@@ -72,9 +81,16 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
     ArrayList<Entry> pressureValue;
 
     private int mTime = 0;
+    private float mPressureValueLatest = 0;
+    private String mMessagePressure = "";
 
     protected Typeface mTfRegular;
     protected Typeface mTfLight;
+
+    boolean paused = false;
+
+    // Reference of DatabaseHelper class to access its DAOs and other components
+    private DatabaseHelper databaseHelper = null;
 
     /*
      * Notifications from UsbService will be received here.
@@ -182,24 +198,24 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         mTfLight = Typeface.createFromAsset(getAssets(), "OpenSans-Light.ttf");
 
         //Tab 1
-        TabHost.TabSpec spec = mTabHost.newTabSpec("Distance");
+        TabHost.TabSpec spec = mTabHost.newTabSpec("Pressure");
+        spec.setContent(R.id.activity_pressure_line_chart);
+        spec.setIndicator(getString(R.string.tabpressure));
+        mTabHost.addTab(spec);
+
+        //Tab 2
+        spec = mTabHost.newTabSpec("Distance");
         spec.setContent(R.id.activity_distance_line_chart);
         spec.setIndicator(getString(R.string.tabdistance));
         mTabHost.addTab(spec);
 
-        //Tab 2
+        //Tab 3
         spec = mTabHost.newTabSpec("Angle");
         spec.setContent(R.id.activity_angle_line_chart);
         spec.setIndicator(getString(R.string.tabangle));
         mTabHost.addTab(spec);
 
-        //Tab 3
-        spec = mTabHost.newTabSpec("Pressure");
-        spec.setContent(R.id.activity_pressure_line_chart);
-        spec.setIndicator(getString(R.string.tabpressure));
-        mTabHost.addTab(spec);
-
-        mTabHost.setCurrentTab(2);
+        mTabHost.setCurrentTab(0);
 
         setupCharts();
 
@@ -211,19 +227,45 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        mTime++;
+                        if (!paused) {
+                            mTime++;
 
-                        float value = (float) (Math.random() * 30);
-                        mPressureValue.setText("" + (value));
-                        setData(mTime, value);
+                            //Test code
+                            mPressureValueLatest = (float) (Math.random() * 30);
 
-                        mPressureChart.invalidate();
+                            if (mMessagePressure.isEmpty()) {
+                                mMessagePressure = "123 102010 p " + mPressureValueLatest;
+                            }
+
+                            mPressureValue.setText("" + mPressureValueLatest);
+                            setData(mTime, mPressureValueLatest);
+
+                            mPressureChart.invalidate();
+
+                            final DataDetails dataDetails = new DataDetails();
+                            // Then, set all the values from user input
+                            dataDetails.addedDate = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
+                            dataDetails.sensorId = Integer.parseInt(mMessagePressure.split(" ")[0]);
+                            dataDetails.key = "p";
+                            dataDetails.value = mPressureValueLatest;
+                            dataDetails.message = mMessagePressure;
+
+                            try {
+                                // This is how, a reference of DAO object can be done
+                                final Dao<DataDetails, Integer> dataDao = getHelper().getDataDao();
+
+                                //This is the way to insert data into a database table
+                                dataDao.create(dataDetails);
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 });
             }
         };
+
         timer.schedule(timerTask, 10000, 10000);
-        ;
     }
 
     @Override
@@ -243,6 +285,65 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         }
 
         return true;
+    }
+
+    // This is how, DatabaseHelper can be initialized for future use
+    private DatabaseHelper getHelper() {
+        if (databaseHelper == null) {
+            databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+        }
+        return databaseHelper;
+    }
+
+    private void readData() {
+        mPressureChart.clear();
+
+        setData(0, 0);
+        mPressureChart.invalidate();
+
+        try {
+            // Declaration of DAO to interact with corresponding table
+            Dao<DataDetails, Integer> dataDao = getHelper().getDataDao();
+
+            // Query the database. We need all the records so, used queryForAll()
+            // It holds the list of ConstructionDetails object fetched from Database
+            List<DataDetails> dataList = dataDao.queryForAll();
+
+            for (DataDetails data : dataList) {
+                if (data.key.equals("p") && diffDate(data.addedDate) <= 1) {
+                    setData(data.dataId, data.value);
+                    mTime = data.dataId;
+                    mPressureChart.invalidate();
+                }
+            }
+
+            if (dataList.size() > 0) {
+                mPressureValue.setText("" + dataList.get(dataList.size() - 1).value);
+            }
+
+            mPressureChart.invalidate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private int diffDate(String date) {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            Date newDate = format.parse(date);
+
+            Date now = new Date();
+
+            //milliseconds
+            long different = now.getTime() - newDate.getTime();
+
+            int elapsedDays = (int) (different / 86400000);
+
+            return elapsedDays;
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     private void startService(Class<?> service, ServiceConnection serviceConnection, Bundle extras) {
@@ -291,11 +392,19 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
         setFilters();  // Start listening notifications from USBService
         startService(USBService.class, usbConnection, null); // Start USBService(if it was not started before) and Bind it
+
+        readData();
+
+        mPressureChart.invalidate();
+
+        paused = false;
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+
+        paused = true;
 
         unregisterReceiver(mUsbReceiver);
         unbindService(usbConnection);
@@ -403,24 +512,22 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         //Format of data
         //SensorID MessageID FieldKey value (ex: 123 102010 p 658)
 
-        float fValue = 0;
-
         String[] values = value.split(" ");
 
         if (values.length >= 4) {
-            if (values[values.length - 2] == H_DISTANCE) {
+            if (values[2] == H_DISTANCE) {
 
-            } else if (values[values.length - 2] == V_DISTANCE) {
+            } else if (values[2] == V_DISTANCE) {
 
-            } else if (values[values.length - 2] == H_ALIGNMENT) {
+            } else if (values[2] == H_ALIGNMENT) {
 
-            } else if (values[values.length - 2] == V_ALIGNMENT) {
+            } else if (values[2] == V_ALIGNMENT) {
 
-            } else if (values[values.length - 2] == PRESSURE) {
-                mPressureValue.setText("" + fValue);
-                setData(mTime, fValue);
-
-                mPressureChart.invalidate();
+            } else if (values[2] == PRESSURE) {
+                //mPressureValueLatest = Integer.parseInt(values[3]);
+                //mMessagePressure = value;
+                mPressureValueLatest = (float) (Math.random() * 30);
+                mMessagePressure = "1 123 p " + mPressureValueLatest;
 
                 SendHttpRequestTask task = new SendHttpRequestTask();
 
