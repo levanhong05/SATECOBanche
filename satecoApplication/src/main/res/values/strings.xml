@@ -4,6 +4,9 @@
     <string name="action_sync">Synchroniser les données</string>
     <string name="action_information">Information</string>
     <string name="action_settings">Paramètres</string>
+    <string name="action_clear">Effacer les données</string>
+    <string name="title_clear_data">Effacer les données</string>
+    <string name="message_clear_data">Voulez-vous vraiment effacer toutes les données?</string>
 
     <string name="action_add_construction">Ajouter une nouvelle construction</string>
     <string name="action_add_formwork">Ajouter un nouveau coffrage</string>

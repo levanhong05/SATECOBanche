@@ -3,6 +3,7 @@ package com.dfm.honglv.satecobanche.main;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -17,6 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -33,6 +35,7 @@ import com.dfm.honglv.satecobanche.databases.DataDetails;
 import com.dfm.honglv.satecobanche.databases.DatabaseHelper;
 import com.dfm.honglv.satecobanche.functions.ConnectivityChangeReceiver;
 import com.dfm.honglv.satecobanche.navigation.InformationActivity;
+
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -43,8 +46,10 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.table.TableUtils;
 
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
@@ -219,6 +224,8 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
         setupCharts();
 
+        readData();
+
         final Handler handler = new Handler();
         Timer timer = new Timer(true);
         TimerTask timerTask = new TimerTask() {
@@ -282,6 +289,42 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                 Intent intent = new Intent(MainActivity.this, InformationActivity.class);
                 startActivity(intent);
                 break;
+
+            case R.id.toolbar_clear:
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.title_clear_data))
+                        .setMessage(getString(R.string.message_clear_data))
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                try {
+                                    Dao<DataDetails, Integer> dataDao = getHelper().getDataDao();
+                                    // continue with delete
+                                    TableUtils.dropTable(dataDao, true);
+                                    TableUtils.createTable(dataDao);
+
+                                    mPressureValueLatest = 0;
+                                    mMessagePressure = "";
+
+                                    mPressureChart.clear();
+                                    pressureDataset.clear();
+                                    mTime = 0;
+
+                                    setData(0, 0);
+
+                                    mPressureChart.invalidate();
+                                } catch (SQLException e) {
+                                    Log.e(DatabaseHelper.class.getName(), "Unable to clear databases", e);
+                                }
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+                break;
         }
 
         return true;
@@ -292,11 +335,13 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         if (databaseHelper == null) {
             databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
         }
+
         return databaseHelper;
     }
 
     private void readData() {
         mPressureChart.clear();
+        pressureDataset.clear();
 
         setData(0, 0);
         mPressureChart.invalidate();
@@ -393,7 +438,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         setFilters();  // Start listening notifications from USBService
         startService(USBService.class, usbConnection, null); // Start USBService(if it was not started before) and Bind it
 
-        readData();
+        //readData();
 
         mPressureChart.invalidate();
 
@@ -526,6 +571,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
             } else if (values[2] == PRESSURE) {
                 //mPressureValueLatest = Integer.parseInt(values[3]);
                 //mMessagePressure = value;
+
                 mPressureValueLatest = (float) (Math.random() * 30);
                 mMessagePressure = "1 123 p " + mPressureValueLatest;
 
