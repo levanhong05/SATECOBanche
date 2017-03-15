@@ -277,7 +277,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
             }
         };
 
-        timer.schedule(timerTask, 10000, 10000);
+        timer.schedule(timerTask, 5000, 5000);
     }
 
     @Override
@@ -503,10 +503,10 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
     protected void onPause() {
         super.onPause();
 
-        paused = true;
+        //paused = true;
 
-        unregisterReceiver(mUsbReceiver);
-        unbindService(usbConnection);
+        //unregisterReceiver(mUsbReceiver);
+        //unbindService(usbConnection);
 
         unregisterReceiver(mNetworkReceiver);
     }
@@ -563,14 +563,17 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         xAxis.setTextColor(Color.WHITE);
         xAxis.setDrawGridLines(true);
         xAxis.setDrawAxisLine(true);
-        xAxis.setGranularityEnabled(true);
 
         YAxis leftAxis = mPressureChart.getAxisLeft();
         leftAxis.setTypeface(mTfLight);
         leftAxis.setTextSize(14f);
+        leftAxis.setAxisMinimum(0f);
         leftAxis.setTextColor(Color.WHITE);
         leftAxis.setDrawGridLines(true);
         leftAxis.setGranularityEnabled(true);
+
+        YAxis rightAxis = mPressureChart.getAxisRight();
+        rightAxis.setDrawZeroLine(false);
 
         mPressureChart.getAxisRight().setEnabled(false);
     }
