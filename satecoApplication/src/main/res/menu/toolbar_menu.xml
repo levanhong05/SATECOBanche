@@ -9,6 +9,12 @@
         android:title="@string/action_information" />
 
     <item
+        android:id="@+id/toolbar_export"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        android:title="@string/action_export_data" />
+
+    <item
         android:id="@+id/toolbar_clear"
         android:orderInCategory="100"
         app:showAsAction="never"

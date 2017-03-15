@@ -8,6 +8,8 @@
     <string name="title_clear_data">Effacer les données</string>
     <string name="message_clear_data">Voulez-vous vraiment effacer toutes les données?</string>
 
+    <string name="action_export_data">Exporter des données</string>
+
     <string name="action_add_construction">Ajouter une nouvelle construction</string>
     <string name="action_add_formwork">Ajouter un nouveau coffrage</string>
     <string name="action_add_chip">Ajouter un nouveau capteur</string>
@@ -31,6 +33,8 @@
     <string name="pressurelabel">Pression</string>
     <string name="pressurevalue">0</string>
     <string name="pressureunit">T</string>
+
+    <string name="legend_pressure">Pression</string>
 
     <string name="tabdistance">Capteur de distance</string>
     <string name="tabangle">Inclinomètre</string>

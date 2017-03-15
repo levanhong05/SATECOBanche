@@ -11,10 +11,12 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -51,7 +53,12 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.table.TableUtils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -140,9 +147,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
             switch (msg.what) {
                 case USBService.MESSAGE_FROM_SERIAL_PORT:
                     String data = (String) msg.obj;
-                    Log.d("", String.format("R: %s", data));
-                    Toast.makeText(mActivity.get(), String.format("R: %s", data), Toast.LENGTH_SHORT).show();
-                    //mActivity.get().display.append(data);
+                    Toast.makeText(mActivity.get(), String.format("Received: %s", data), Toast.LENGTH_SHORT).show();
                     mActivity.get().setData(data);
                     break;
                 case USBService.CTS_CHANGE:
@@ -153,9 +158,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                     break;
                 case USBService.SYNC_READ:
                     String buffer = (String) msg.obj;
-                    Log.d("", String.format("RS: %s", buffer));
-                    Toast.makeText(mActivity.get(), String.format("RS: %s", buffer), Toast.LENGTH_SHORT).show();
-                    //mActivity.get().display.append(buffer);
+                    Toast.makeText(mActivity.get(), String.format("Received: %s", buffer), Toast.LENGTH_SHORT).show();
                     mActivity.get().setData(buffer);
                     break;
             }
@@ -238,33 +241,35 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                             mTime++;
 
                             //Test code
-                            mPressureValueLatest = (float) (Math.random() * 30);
+                            //mPressureValueLatest = (float) (Math.random() * 30);
 
-                            if (mMessagePressure.isEmpty()) {
-                                mMessagePressure = "123 102010 p " + mPressureValueLatest;
-                            }
+                            //if (mMessagePressure.isEmpty()) {
+                            //    mMessagePressure = "123 102010 p " + mPressureValueLatest;
+                            //}
 
                             mPressureValue.setText("" + mPressureValueLatest);
                             setData(mTime, mPressureValueLatest);
 
                             mPressureChart.invalidate();
 
-                            final DataDetails dataDetails = new DataDetails();
-                            // Then, set all the values from user input
-                            dataDetails.addedDate = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
-                            dataDetails.sensorId = Integer.parseInt(mMessagePressure.split(" ")[0]);
-                            dataDetails.key = "p";
-                            dataDetails.value = mPressureValueLatest;
-                            dataDetails.message = mMessagePressure;
+                            if (!mMessagePressure.isEmpty()) {
+                                final DataDetails dataDetails = new DataDetails();
+                                // Then, set all the values from user input
+                                dataDetails.addedDate = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
+                                dataDetails.sensorId = Integer.parseInt(mMessagePressure.split(" ")[0]);
+                                dataDetails.key = PRESSURE;
+                                dataDetails.value = mPressureValueLatest;
+                                dataDetails.message = mMessagePressure;
 
-                            try {
-                                // This is how, a reference of DAO object can be done
-                                final Dao<DataDetails, Integer> dataDao = getHelper().getDataDao();
+                                try {
+                                    // This is how, a reference of DAO object can be done
+                                    final Dao<DataDetails, Integer> dataDao = getHelper().getDataDao();
 
-                                //This is the way to insert data into a database table
-                                dataDao.create(dataDetails);
-                            } catch (SQLException e) {
-                                e.printStackTrace();
+                                    //This is the way to insert data into a database table
+                                    dataDao.create(dataDetails);
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     }
@@ -307,6 +312,8 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
                                     mPressureChart.clear();
                                     pressureDataset.clear();
+                                    pressureValue.clear();
+
                                     mTime = 0;
 
                                     setData(0, 0);
@@ -325,6 +332,52 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
                 break;
+
+            case R.id.toolbar_export:
+                String state = Environment.getExternalStorageState();
+
+                if (Environment.MEDIA_MOUNTED.equals(state)) {
+                    File dir = getExternalFilesDir(null);
+
+                    if (!dir.exists()) {
+                        dir.mkdirs();
+                    }
+
+                    String timeStamp= new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+                    File file = new File(dir, "sateco_" + timeStamp + ".csv");
+
+                    try {
+                        FileOutputStream outFile = new FileOutputStream(file);
+                        OutputStreamWriter out = new OutputStreamWriter(outFile);
+
+                        if (pressureValue.size() > 0) {
+                            out.append("Time          Pression\n");
+
+                            for (Entry e : pressureValue) {
+                                out.append(((int)(e.getX()) + "          " + e.getY() + "\n"));
+                            }
+
+                            Toast.makeText(getApplicationContext(), "Export data successful.", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "No data available.", Toast.LENGTH_LONG).show();
+                        }
+
+                        out.flush();
+                        out.close();
+                        outFile.close();
+
+                        MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, null);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "SD Card not available.", Toast.LENGTH_LONG).show();
+                }
+
+                break;
         }
 
         return true;
@@ -342,6 +395,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
     private void readData() {
         mPressureChart.clear();
         pressureDataset.clear();
+        pressureValue.clear();
 
         setData(0, 0);
         mPressureChart.invalidate();
@@ -355,7 +409,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
             List<DataDetails> dataList = dataDao.queryForAll();
 
             for (DataDetails data : dataList) {
-                if (data.key.equals("p") && diffDate(data.addedDate) <= 1) {
+                if (data.key.equals(PRESSURE) && diffDate(data.addedDate) <= 1) {
                     setData(data.dataId, data.value);
                     mTime = data.dataId;
                     mPressureChart.invalidate();
@@ -496,7 +550,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         // modify the legend ...
         legend.setForm(Legend.LegendForm.LINE);
         legend.setTypeface(mTfLight);
-        legend.setTextSize(11f);
+        legend.setTextSize(14f);
         legend.setTextColor(Color.WHITE);
         legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
         legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
@@ -505,14 +559,16 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
         XAxis xAxis = mPressureChart.getXAxis();
         xAxis.setTypeface(mTfLight);
-        xAxis.setTextSize(11f);
+        xAxis.setTextSize(14f);
         xAxis.setTextColor(Color.WHITE);
         xAxis.setDrawGridLines(true);
         xAxis.setDrawAxisLine(true);
+        xAxis.setGranularityEnabled(true);
 
         YAxis leftAxis = mPressureChart.getAxisLeft();
         leftAxis.setTypeface(mTfLight);
-        leftAxis.setTextColor(ColorTemplate.getHoloBlue());
+        leftAxis.setTextSize(14f);
+        leftAxis.setTextColor(Color.WHITE);
         leftAxis.setDrawGridLines(true);
         leftAxis.setGranularityEnabled(true);
 
@@ -529,12 +585,12 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
             mPressureChart.notifyDataSetChanged();
         } else {
             // create a dataset and give it a type
-            pressureDataset = new LineDataSet(pressureValue, "Pression");
+            pressureDataset = new LineDataSet(pressureValue, getString(R.string.legend_pressure));
 
             pressureDataset.setAxisDependency(YAxis.AxisDependency.LEFT);
-            pressureDataset.setColor(ColorTemplate.getHoloBlue());
+            pressureDataset.setColor(Color.RED);
             pressureDataset.setCircleColor(Color.WHITE);
-            pressureDataset.setLineWidth(2f);
+            pressureDataset.setLineWidth(3f);
             pressureDataset.setCircleRadius(3f);
             pressureDataset.setFillAlpha(65);
             pressureDataset.setFillColor(ColorTemplate.getHoloBlue());
@@ -544,7 +600,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
             // create a data object with the datasets
             LineData data = new LineData(pressureDataset);
             data.setValueTextColor(Color.WHITE);
-            data.setValueTextSize(9f);
+            data.setValueTextSize(12f);
 
             // set data
             mPressureChart.setData(data);
@@ -552,28 +608,26 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
     }
 
     private void setData(String value) {
-        mTime++;
-
         //Format of data
         //SensorID MessageID FieldKey value (ex: 123 102010 p 658)
 
         String[] values = value.split(" ");
 
         if (values.length >= 4) {
-            if (values[2] == H_DISTANCE) {
+            if (values[2].equals(H_DISTANCE)) {
 
-            } else if (values[2] == V_DISTANCE) {
+            } else if (values[2].equals(V_DISTANCE)) {
 
-            } else if (values[2] == H_ALIGNMENT) {
+            } else if (values[2].equals(H_ALIGNMENT)) {
 
-            } else if (values[2] == V_ALIGNMENT) {
+            } else if (values[2].equals(V_ALIGNMENT)) {
 
-            } else if (values[2] == PRESSURE) {
-                //mPressureValueLatest = Integer.parseInt(values[3]);
-                //mMessagePressure = value;
+            } else if (values[2].equals(PRESSURE)) {
+                mPressureValueLatest = Float.parseFloat(values[3]);
+                mMessagePressure = value;
 
-                mPressureValueLatest = (float) (Math.random() * 30);
-                mMessagePressure = "1 123 p " + mPressureValueLatest;
+                //mPressureValueLatest = (float) (Math.random() * 30);
+                //mMessagePressure = "1 123 p " + mPressureValueLatest;
 
                 SendHttpRequestTask task = new SendHttpRequestTask();
 
