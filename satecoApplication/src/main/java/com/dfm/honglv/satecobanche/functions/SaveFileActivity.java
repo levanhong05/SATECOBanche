@@ -71,7 +71,7 @@ public class SaveFileActivity extends AppCompatActivity
             if (Environment.MEDIA_MOUNTED.equals(state)) {
                 rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
             } else {
-                rootPath = getApplicationContext().getFilesDir().getAbsolutePath();
+                rootPath = getFilesDir().getAbsolutePath();
             }
 
             setCurrentPath(rootPath + "/");
