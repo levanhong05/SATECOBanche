@@ -1,9 +1,13 @@
 package com.dfm.honglv.satecobanche.functions;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -51,15 +55,9 @@ public class SaveFileActivity extends AppCompatActivity
             btnOK = (Button) findViewById(R.id.SFA_BtnOK);
             btnCancel = (Button) findViewById(R.id.SFA_BtnCancel);
 
-            if (savedInstanceState == null) {
-                Bundle extras = getIntent().getExtras();
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 
-                if (extras != null) {
-                    txtFileName.setText(extras.getString("fileName"));
-                }
-            } else {
-                txtFileName.setText((String) savedInstanceState.getSerializable("fileName"));
-            }
+            txtFileName.setText("sateco_" + timeStamp + ".csv");
 
             /* Initializing Event Handlers */
             lvList.setOnItemClickListener(this);
@@ -146,21 +144,28 @@ public class SaveFileActivity extends AppCompatActivity
 
         switch (v.getId()) {
             case R.id.SFA_BtnOK:
-                intent = new Intent();
-                intent.putExtra("filePath", currentPath + txtFileName.getText().toString());
-                intent.putExtra("shortFileName", txtFileName.getText().toString());
-                setResult(RESULT_OK, intent);
+                if (txtFileName.getText().toString().trim().equals("")) {
+                    txtFileName.setError(getString(R.string.error_empty_field));
+                } else {
+                    Pattern pattern = Pattern.compile("^[a-zA-Z0-9_.-]*$");
+                    Matcher matcher = pattern .matcher(txtFileName.getText().toString().trim());
 
-                this.finish();
+                    if (!matcher.matches()) {
+                        txtFileName.setError(getString(R.string.error_invalid_file_name));
+                    } else {
+                        intent = new Intent();
+                        intent.putExtra("filePath", currentPath + txtFileName.getText().toString());
+                        setResult(RESULT_OK, intent);
+                        this.finish();
+                    }
+                }
 
                 break;
 
             case R.id.SFA_BtnCancel:
                 intent = new Intent();
                 intent.putExtra("filePath", "");
-                intent.putExtra("shortFileName", "");
                 setResult(RESULT_CANCELED, intent);
-
                 this.finish();
 
                 break;

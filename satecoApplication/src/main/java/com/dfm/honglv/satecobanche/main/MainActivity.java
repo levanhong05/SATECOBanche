@@ -240,13 +240,6 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                         if (!paused) {
                             mTime++;
 
-                            //Test code
-                            //mPressureValueLatest = (float) (Math.random() * 30);
-
-                            //if (mMessagePressure.isEmpty()) {
-                            //    mMessagePressure = "123 102010 p " + mPressureValueLatest;
-                            //}
-
                             mPressureValue.setText("" + mPressureValueLatest);
                             setData(mTime, mPressureValueLatest);
 
@@ -320,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
                                     mPressureChart.invalidate();
                                 } catch (SQLException e) {
-                                    Log.e(DatabaseHelper.class.getName(), "Unable to clear databases", e);
+                                    Toast.makeText(getApplicationContext(), getString(R.string.unable_clear_database), Toast.LENGTH_LONG).show();
                                 }
                             }
                         })
@@ -335,9 +328,6 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
             case R.id.toolbar_export:
                 Intent i = new Intent(this, SaveFileActivity.class);
-                String timeStamp= new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                i.putExtra("fileName", "sateco_" + timeStamp + ".csv");
-
                 this.startActivityForResult(i, 123);
 
                 break;
@@ -420,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
             List<DataDetails> dataList = dataDao.queryForAll();
 
             for (DataDetails data : dataList) {
-                if (data.key.equals(PRESSURE) && diffDate(data.addedDate) <= 1) {
+                if (data.key.equals(PRESSURE) && diffDate(data.addedDate) == 0) {
                     setData(data.dataId, data.value);
                     mTime = data.dataId;
                     mPressureChart.invalidate();

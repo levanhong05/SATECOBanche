@@ -11,6 +11,7 @@ android {
         versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -34,12 +35,12 @@ dependencies {
     compile 'com.j256.ormlite:ormlite-android:5.0'
     compile project(':usbserial')
     compile project(':MPChartLib')
-    //compile 'com.github.PhilJay:MPAndroidChart:v3.0.1'
-    compile 'com.android.support:appcompat-v7:25.2.0'
-    compile 'com.android.support:design:25.2.0'
+    compile 'com.android.support:appcompat-v7:25.3.0'
+    compile 'com.android.support:design:25.3.0'
     compile 'com.google.android.gms:play-services:10.2.0'
     compile 'com.j256.ormlite:ormlite-android:5.0'
-    compile 'com.android.support:support-v4:25.2.0'
-    compile 'com.android.support:support-vector-drawable:25.2.0'
+    compile 'com.android.support:support-v4:25.3.0'
+    compile 'com.android.support:support-vector-drawable:25.3.0'
     testCompile 'junit:junit:4.12'
+    compile 'com.android.support:multidex:1.0.1'
 }

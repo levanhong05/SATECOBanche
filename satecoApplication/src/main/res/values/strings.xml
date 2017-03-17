@@ -8,6 +8,9 @@
     <string name="dialog_hint_file_name">Entrez le nom de fichier</string>
     <string name="extension_filter_hint">Filtre d\'extension</string>
 
+    <string name="error_invalid_file_name">Nom de fichier non valide.</string>
+    <string name="error_empty_field">Ce champ est obligatoire.</string>
+
     <string name="extension_filter_csv">CSV fichier (*.csv)</string>
 
     <string name="button_ok">OK</string>
@@ -18,12 +21,15 @@
     <string name="export_data_successful">Export des données réussies.</string>
     <string name="export_no_data">Pas de données disponibles.</string>
 
+    <string name="version">Version</string>
+
     <string name="action_sync">Synchroniser les données</string>
     <string name="action_information">Information</string>
     <string name="action_settings">Paramètres</string>
     <string name="action_clear">Effacer les données</string>
     <string name="title_clear_data">Effacer les données</string>
     <string name="message_clear_data">Voulez-vous vraiment effacer toutes les données?</string>
+    <string name="unable_clear_database">Impossible d\'effacer les bases de données</string>
 
     <string name="action_export_data">Exporter des données</string>
 
@@ -49,7 +55,7 @@
 
     <string name="pressurelabel">Pression</string>
     <string name="pressurevalue">0</string>
-    <string name="pressureunit">T</string>
+    <string name="pressureunit">Tf</string>
 
     <string name="legend_pressure">Pression</string>
 

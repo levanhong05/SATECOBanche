@@ -28,11 +28,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!-- API key for the Android Maps API v2. The value is defined as a string resource. -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAkm1_YF-r7JsvdxBjblI1zQxL4c4vU4zM" />
-
         <activity
             android:name=".main.MainActivity"
             android:launchMode="singleTask"
@@ -85,11 +80,7 @@
         <activity
             android:name=".navigation.InformationActivity"
             android:launchMode="singleTask"
-            android:label="Information"
-            android:parentActivityName=".main.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.dfm.honglv.satecobanche.main.MainActivity" />
+            android:label="@string/action_information">
         </activity>
 
         <activity

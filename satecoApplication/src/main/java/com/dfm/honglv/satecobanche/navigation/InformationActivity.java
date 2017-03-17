@@ -1,11 +1,14 @@
 package com.dfm.honglv.satecobanche.navigation;
 
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
 import com.dfm.honglv.satecobanche.BuildConfig;
 import com.dfm.honglv.satecobanche.R;
+
+import java.io.File;
 
 public class InformationActivity extends AppCompatActivity {
 
@@ -22,8 +25,17 @@ public class InformationActivity extends AppCompatActivity {
 
         String versionName = BuildConfig.VERSION_NAME;
 
-        txtVersion.setText("Version " + versionName);
+        txtVersion.setText(getString(R.string.version) + " " + versionName);
     }
 
+    @Override
+    public boolean onSupportNavigateUp(){
+        onBackPressed();
+        return true;
+    }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }
