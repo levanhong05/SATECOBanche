@@ -18,7 +18,6 @@
         android:required="true" />
 
     <application
-        android:permission="android.permission.WRITE_EXTERNAL_STORAGE"
         android:launchMode="singleTask"
         android:clearTaskOnLaunch="true"
         android:stateNotNeeded="true"
@@ -37,12 +36,9 @@
             android:windowSoftInputMode="stateHidden" >
             <intent-filter>
                 <action android:name="com.dfm.honglv.satecobanche.main.MainActivity" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
 
                 <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-
-            <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
 
             <meta-data
@@ -53,6 +49,7 @@
             android:name=".main.SplashActivity"
             android:launchMode="singleTask"
             android:screenOrientation="nosensor"
+            android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
