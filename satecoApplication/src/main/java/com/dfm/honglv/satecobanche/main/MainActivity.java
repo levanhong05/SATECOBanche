@@ -19,7 +19,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -148,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
             switch (msg.what) {
                 case USBService.MESSAGE_FROM_SERIAL_PORT:
                     String data = (String) msg.obj;
-                    Toast.makeText(mActivity.get(), String.format("Received: %s", data), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(mActivity.get(), String.format("Received: %s", data), Toast.LENGTH_SHORT).show();
                     mActivity.get().setData(data);
                     break;
                 case USBService.CTS_CHANGE:
@@ -159,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                     break;
                 case USBService.SYNC_READ:
                     String buffer = (String) msg.obj;
-                    Toast.makeText(mActivity.get(), String.format("Received: %s", buffer), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(mActivity.get(), String.format("Received: %s", buffer), Toast.LENGTH_SHORT).show();
                     mActivity.get().setData(buffer);
                     break;
             }
@@ -368,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                             FileOutputStream outFile = new FileOutputStream(file);
                             OutputStreamWriter out = new OutputStreamWriter(outFile);
 
-                            out.append("Time          Pression\n");
+                            out.append(getString(R.string.export_data_time)  + "          " + getString(R.string.export_data_pressure) + "\n");
 
                             for (Entry e : pressureValue) {
                                 out.append(((int)(e.getX()) + "          " + e.getY() + "\n"));
@@ -380,9 +379,9 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
                             MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, null);
 
-                            Toast.makeText(getApplicationContext(), "Export data successful.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), getString(R.string.export_data_successful), Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(getApplicationContext(), "No data available.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), getString(R.string.export_no_data), Toast.LENGTH_LONG).show();
                         }
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();

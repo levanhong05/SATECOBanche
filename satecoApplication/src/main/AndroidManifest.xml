@@ -94,7 +94,8 @@
 
         <activity
             android:name=".functions.SaveFileActivity"
-            android:label="@string/title_activity_save_file" >
+            android:launchMode="singleTask"
+            android:label="@string/title_activity_save_file">
         </activity>
 
         <service

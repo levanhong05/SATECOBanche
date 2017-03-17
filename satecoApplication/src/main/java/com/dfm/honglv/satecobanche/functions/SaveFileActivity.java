@@ -16,7 +16,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.dfm.honglv.satecobanche.R;
@@ -70,7 +69,7 @@ public class SaveFileActivity extends AppCompatActivity
 
             setCurrentPath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/");
         } catch (Exception ex) {
-            Toast.makeText(this, "Error in SaveFileActivity.onCreate: " + ex.getMessage(), Toast.LENGTH_SHORT).show();
+            ex.printStackTrace();
         }
     }
 
@@ -127,6 +126,12 @@ public class SaveFileActivity extends AppCompatActivity
     }
 
     @Override
+    public boolean onSupportNavigateUp(){
+        onBackPressed();
+        return true;
+    }
+
+    @Override
     public void onBackPressed() {
         if (!currentPath.equals(Environment.getExternalStorageDirectory().getAbsolutePath() + "/")) {
             setCurrentPath(new File(currentPath).getParent() + "/");
@@ -141,7 +146,6 @@ public class SaveFileActivity extends AppCompatActivity
 
         switch (v.getId()) {
             case R.id.SFA_BtnOK:
-
                 intent = new Intent();
                 intent.putExtra("filePath", currentPath + txtFileName.getText().toString());
                 intent.putExtra("shortFileName", txtFileName.getText().toString());

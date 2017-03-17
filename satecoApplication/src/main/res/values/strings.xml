@@ -13,6 +13,11 @@
     <string name="button_ok">OK</string>
     <string name="button_cancel">Annuler</string>
 
+    <string name="export_data_time">Temps</string>
+    <string name="export_data_pressure">Pression</string>
+    <string name="export_data_successful">Export des données réussies.</string>
+    <string name="export_no_data">Pas de données disponibles.</string>
+
     <string name="action_sync">Synchroniser les données</string>
     <string name="action_information">Information</string>
     <string name="action_settings">Paramètres</string>
