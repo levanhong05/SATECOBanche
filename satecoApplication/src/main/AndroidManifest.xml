@@ -92,6 +92,11 @@
                 android:value="com.dfm.honglv.satecobanche.main.MainActivity" />
         </activity>
 
+        <activity
+            android:name=".functions.SaveFileActivity"
+            android:label="@string/title_activity_save_file" >
+        </activity>
+
         <service
             android:name=".functions.NetworkService"
             android:enabled="true"

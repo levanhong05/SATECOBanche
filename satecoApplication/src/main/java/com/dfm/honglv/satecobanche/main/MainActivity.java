@@ -16,10 +16,10 @@ import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -36,6 +36,7 @@ import com.dfm.honglv.satecobanche.R;
 import com.dfm.honglv.satecobanche.databases.DataDetails;
 import com.dfm.honglv.satecobanche.databases.DatabaseHelper;
 import com.dfm.honglv.satecobanche.functions.ConnectivityChangeReceiver;
+import com.dfm.honglv.satecobanche.functions.SaveFileActivity;
 import com.dfm.honglv.satecobanche.navigation.InformationActivity;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -334,53 +335,64 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                 break;
 
             case R.id.toolbar_export:
-                String state = Environment.getExternalStorageState();
+                Intent i = new Intent(this, SaveFileActivity.class);
+                String timeStamp= new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                i.putExtra("fileName", "sateco_" + timeStamp + ".csv");
 
-                if (Environment.MEDIA_MOUNTED.equals(state)) {
-                    File dir = getExternalFilesDir(null);
+                this.startActivityForResult(i, 123);
 
-                    if (!dir.exists()) {
-                        dir.mkdirs();
+                break;
+        }
+
+        return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case 123:
+                if (resultCode == RESULT_OK) {
+                    String fileName = data.getStringExtra("filePath");
+                    //String shortFileName = data.getStringExtra("shortFileName");
+
+                    String temp = fileName;
+                    temp = temp.toLowerCase();
+
+                    if (!temp.endsWith(".csv")) {
+                        fileName += ".csv";
                     }
 
-                    String timeStamp= new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-
-                    File file = new File(dir, "sateco_" + timeStamp + ".csv");
-
                     try {
-                        FileOutputStream outFile = new FileOutputStream(file);
-                        OutputStreamWriter out = new OutputStreamWriter(outFile);
-
                         if (pressureValue.size() > 0) {
+                            File file = new File(fileName);
+                            FileOutputStream outFile = new FileOutputStream(file);
+                            OutputStreamWriter out = new OutputStreamWriter(outFile);
+
                             out.append("Time          Pression\n");
 
                             for (Entry e : pressureValue) {
                                 out.append(((int)(e.getX()) + "          " + e.getY() + "\n"));
                             }
 
+                            out.flush();
+                            out.close();
+                            outFile.close();
+
+                            MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, null);
+
                             Toast.makeText(getApplicationContext(), "Export data successful.", Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(getApplicationContext(), "No data available.", Toast.LENGTH_LONG).show();
                         }
-
-                        out.flush();
-                        out.close();
-                        outFile.close();
-
-                        MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, null);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                } else {
-                    Toast.makeText(getApplicationContext(), "SD Card not available.", Toast.LENGTH_LONG).show();
                 }
 
                 break;
         }
-
-        return true;
     }
 
     // This is how, DatabaseHelper can be initialized for future use

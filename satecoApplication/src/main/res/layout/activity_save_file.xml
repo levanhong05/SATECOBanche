@@ -1,0 +1,68 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="16dp">
+
+    <ListView
+        android:id="@+id/SFA_LvList"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"></ListView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:text="@string/label_save_file_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/lblFileName" />
+
+        <EditText
+            android:id="@+id/SFA_TxtFileName"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/dialog_hint_file_name"
+            android:inputType="text"
+            android:text="sateco.csv"
+            android:layout_weight="1"
+            android:paddingLeft="5dp"
+            android:layout_marginLeft="5dp" />
+
+        <EditText
+            android:id="@+id/et_extension"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/extension_filter_csv"
+            android:hint="@string/extension_filter_hint"
+            android:enabled="false"
+            android:layout_width="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/SFA_BtnOK"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/button_ok" />
+
+        <Button
+            android:id="@+id/SFA_BtnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/button_cancel" />
+
+    </LinearLayout>
+
+</LinearLayout>
