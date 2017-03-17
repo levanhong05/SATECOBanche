@@ -39,6 +39,7 @@ public class SaveFileActivity extends AppCompatActivity
     Button btnCancel;
 
     String currentPath = null;
+    String rootPath = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +66,15 @@ public class SaveFileActivity extends AppCompatActivity
             btnOK.setOnClickListener(this);
             btnCancel.setOnClickListener(this);
 
-            setCurrentPath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/");
+            String state = Environment.getExternalStorageState();
+
+            if (Environment.MEDIA_MOUNTED.equals(state)) {
+                rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+            } else {
+                rootPath = getApplicationContext().getFilesDir().getAbsolutePath();
+            }
+
+            setCurrentPath(rootPath + "/");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -131,7 +140,7 @@ public class SaveFileActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        if (!currentPath.equals(Environment.getExternalStorageDirectory().getAbsolutePath() + "/")) {
+        if (!currentPath.equals(rootPath + "/")) {
             setCurrentPath(new File(currentPath).getParent() + "/");
         } else {
             super.onBackPressed();
