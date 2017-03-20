@@ -36,6 +36,7 @@ import com.dfm.honglv.satecobanche.databases.DataDetails;
 import com.dfm.honglv.satecobanche.databases.DatabaseHelper;
 import com.dfm.honglv.satecobanche.functions.ConnectivityChangeReceiver;
 import com.dfm.honglv.satecobanche.functions.SaveFileActivity;
+import com.dfm.honglv.satecobanche.functions.TimeConversion;
 import com.dfm.honglv.satecobanche.navigation.InformationActivity;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -81,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
     private static String V_ALIGNMENT = "av";
 
     private static String PRESSURE = "p";
+
+    private static int X_RANGE = 10;
 
     private String urlServer = "http://192.168.1.1/sateco_server/test_server";
 
@@ -248,11 +251,10 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                             if (!mMessagePressure.isEmpty()) {
                                 final DataDetails dataDetails = new DataDetails();
                                 // Then, set all the values from user input
-                                dataDetails.addedDate = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
+                                dataDetails.addedDate = TimeConversion.dateToTimestamp(new Date());
                                 dataDetails.sensorId = Integer.parseInt(mMessagePressure.split(" ")[0]);
                                 dataDetails.key = PRESSURE;
                                 dataDetails.value = mPressureValueLatest;
-                                dataDetails.message = mMessagePressure;
 
                                 try {
                                     // This is how, a reference of DAO object can be done
@@ -427,23 +429,15 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         }
     }
 
-    private int diffDate(String date) {
-        try {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-            Date newDate = format.parse(date);
+    private int diffDate(int timestamp) {
+        Date now = new Date();
 
-            Date now = new Date();
+        //seconds
+        long different = now.getTime() / 1000 - timestamp;
 
-            //milliseconds
-            long different = now.getTime() - newDate.getTime();
+        int elapsedDays = (int) (different / 86400);
 
-            int elapsedDays = (int) (different / 86400000);
-
-            return elapsedDays;
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return 0;
-        }
+        return elapsedDays;
     }
 
     private void startService(Class<?> service, ServiceConnection serviceConnection, Bundle extras) {
@@ -534,11 +528,14 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         mPressureChart.setDrawGridBackground(false);
         mPressureChart.setHighlightPerDragEnabled(true);
 
+        mPressureChart.setVisibleXRangeMaximum(X_RANGE);
+        mPressureChart.setVisibleXRangeMinimum(X_RANGE);
+
         // if disabled, scaling can be done on x- and y-axis separately
         mPressureChart.setPinchZoom(true);
 
         // set an alternative background color
-        mPressureChart.setBackgroundColor(Color.LTGRAY);
+        mPressureChart.setBackgroundColor(Color.WHITE);
 
         // add data
         setData(0, 0);
@@ -547,12 +544,13 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
         // get the legend (only possible after setting data)
         Legend legend = mPressureChart.getLegend();
+        //legend.setEnabled(false);
 
         // modify the legend ...
-        legend.setForm(Legend.LegendForm.LINE);
+        //legend.setForm(Legend.LegendForm.LINE);
         legend.setTypeface(mTfLight);
         legend.setTextSize(14f);
-        legend.setTextColor(Color.WHITE);
+        //legend.setTextColor(Color.WHITE);
         legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
         legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
         legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
@@ -560,18 +558,21 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
         XAxis xAxis = mPressureChart.getXAxis();
         xAxis.setTypeface(mTfLight);
-        xAxis.setTextSize(14f);
-        xAxis.setTextColor(Color.WHITE);
+        xAxis.setTextSize(15f);
+        xAxis.setTextColor(Color.BLACK);
         xAxis.setDrawGridLines(true);
         xAxis.setDrawAxisLine(true);
+        xAxis.setDrawLabels(true);
+        xAxis.setLabelCount(X_RANGE);
 
         YAxis leftAxis = mPressureChart.getAxisLeft();
         leftAxis.setTypeface(mTfLight);
-        leftAxis.setTextSize(14f);
+        leftAxis.setTextSize(15f);
         leftAxis.setAxisMinimum(0f);
-        leftAxis.setTextColor(Color.WHITE);
+        leftAxis.setTextColor(Color.BLACK);
         leftAxis.setDrawGridLines(true);
         leftAxis.setGranularityEnabled(true);
+        leftAxis.setDrawLabels(true);
 
         YAxis rightAxis = mPressureChart.getAxisRight();
         rightAxis.setDrawZeroLine(false);
@@ -593,11 +594,11 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
             pressureDataset.setAxisDependency(YAxis.AxisDependency.LEFT);
             pressureDataset.setColor(Color.RED);
-            pressureDataset.setCircleColor(Color.WHITE);
+            //pressureDataset.setCircleColor(Color.WHITE);
             pressureDataset.setLineWidth(3f);
-            pressureDataset.setCircleRadius(3f);
+            pressureDataset.setCircleRadius(1f);
             pressureDataset.setFillAlpha(65);
-            pressureDataset.setFillColor(ColorTemplate.getHoloBlue());
+            //pressureDataset.setFillColor(ColorTemplate.getHoloBlue());
             pressureDataset.setHighLightColor(Color.rgb(244, 117, 117));
             pressureDataset.setDrawCircleHole(false);
 
@@ -608,6 +609,10 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
             // set data
             mPressureChart.setData(data);
+        }
+
+        if (time > X_RANGE) {
+            mPressureChart.moveViewToX(time - X_RANGE);
         }
     }
 

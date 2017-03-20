@@ -1,5 +1,6 @@
 package com.dfm.honglv.satecobanche.databases;
 
+import com.dfm.honglv.satecobanche.functions.TimeConversion;
 import com.j256.ormlite.field.DatabaseField;
 
 import java.io.Serializable;
@@ -25,7 +26,7 @@ public class DataDetails implements Serializable {
     public int dataId;
 
     @DatabaseField(columnName = "added_date")
-    public String addedDate;
+    public int addedDate;
 
     @DatabaseField(columnName = "sensor_id")
     public int sensorId;
@@ -36,20 +37,16 @@ public class DataDetails implements Serializable {
     @DatabaseField(columnName = "value")
     public float value;
 
-    @DatabaseField(columnName = "str_message")
-    public String message;
-
     // Default constructor is needed for the SQLite, so make sure you also have it
     public DataDetails(){
 
     }
 
     //For our own purpose, so it's easier to create a DataDetails object
-    public DataDetails(final int sensorId, final String key, final float value, final String message){
-        this.addedDate = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
+    public DataDetails(final int sensorId, final String key, final float value){
+        this.addedDate = TimeConversion.dateToTimestamp(new Date());
         this.sensorId = sensorId;
         this.key = key;
         this.value = value;
-        this.message = message;
     }
 }

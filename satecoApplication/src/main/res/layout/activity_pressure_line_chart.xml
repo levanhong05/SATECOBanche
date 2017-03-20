@@ -14,15 +14,16 @@
         android:id="@+id/chartPressure"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/pressurelabel"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true" />
+        android:layout_alignParentTop="false"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/pressurelabel"
+        android:layout_alignParentBottom="true" />
 
     <TextView
         android:id="@+id/pressurelabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentBottom="false"
         android:layout_alignParentStart="true"
         android:text="@string/pressurelabel"
         android:layout_marginBottom="15dp"
@@ -30,20 +31,22 @@
         android:gravity="right"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:paddingBottom="15dp"
-        android:paddingTop="20dp" />
+        android:paddingTop="20dp"
+        android:layout_alignParentTop="true" />
 
     <TextView
         android:id="@+id/pressureunit"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentBottom="false"
         android:layout_alignParentEnd="true"
         android:text="@string/pressureunit"
         android:layout_marginBottom="15dp"
         android:layout_marginRight="10dp"
         android:gravity="right"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:paddingBottom="15dp" />
+        android:paddingBottom="15dp"
+        android:layout_alignParentTop="true" />
 
     <EditText
         android:id="@+id/pressurevalue"
@@ -59,6 +62,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_toLeftOf="@+id/pressureunit"
         android:layout_toRightOf="@+id/pressurelabel"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentTop="true" />
 
 </RelativeLayout>

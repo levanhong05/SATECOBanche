@@ -60,7 +60,7 @@
                     android:id="@+id/txtCopyright"
                     android:gravity="center_horizontal" />
                 <TextView
-                    android:text="Développé par DFM-Europe Ltd."
+                    android:text="Développé par DFM-Europe S.A.S"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/txtCompany"

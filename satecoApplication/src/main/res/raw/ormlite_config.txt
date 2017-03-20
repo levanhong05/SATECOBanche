@@ -24,10 +24,6 @@ columnName=key
 fieldName=value
 columnName=value
 # --field-end--
-# --field-start--
-fieldName=message
-columnName=str_message
-# --field-end--
 # --table-fields-end--
 # --table-end--
 #################################
