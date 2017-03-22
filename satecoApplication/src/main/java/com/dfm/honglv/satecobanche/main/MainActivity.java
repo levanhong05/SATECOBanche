@@ -47,7 +47,6 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
@@ -64,7 +63,6 @@ import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -83,9 +81,9 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
     private static String PRESSURE = "p";
 
-    private static int X_RANGE = 10;
+    private static int X_RANGE = 500;
 
-    private String urlServer = "http://192.168.1.1/sateco_server/test_server";
+    //private String urlServer = "http://192.168.1.1/sateco_server/test_server";
 
     TabHost mTabHost;
 
@@ -133,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         }
     };
 
-    private final ConnectivityChangeReceiver mNetworkReceiver = new ConnectivityChangeReceiver();
+    //private final ConnectivityChangeReceiver mNetworkReceiver = new ConnectivityChangeReceiver();
 
     /*
      * This handler will be passed to UsbService. Data received from serial port is displayed through this handler
@@ -313,6 +311,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
                                     setData(0, 0);
 
+                                    mPressureChart.notifyDataSetChanged();
                                     mPressureChart.invalidate();
                                 } catch (SQLException e) {
                                     Toast.makeText(getApplicationContext(), getString(R.string.unable_clear_database), Toast.LENGTH_LONG).show();
@@ -415,6 +414,8 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                 if (data.key.equals(PRESSURE) && diffDate(data.addedDate) == 0) {
                     setData(data.dataId, data.value);
                     mTime = data.dataId;
+
+                    mPressureChart.notifyDataSetChanged();
                     mPressureChart.invalidate();
                 }
             }
@@ -468,10 +469,10 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
         registerReceiver(mUsbReceiver, usbFilter);
 
-        final IntentFilter networkFilter = new IntentFilter();
-        networkFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        //final IntentFilter networkFilter = new IntentFilter();
+        //networkFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 
-        registerReceiver(mNetworkReceiver, networkFilter);
+        //registerReceiver(mNetworkReceiver, networkFilter);
     }
 
     @Override
@@ -503,7 +504,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         //unregisterReceiver(mUsbReceiver);
         //unbindService(usbConnection);
 
-        unregisterReceiver(mNetworkReceiver);
+        //unregisterReceiver(mNetworkReceiver);
     }
 
     private void setupCharts() {
@@ -528,9 +529,6 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         mPressureChart.setDrawGridBackground(false);
         mPressureChart.setHighlightPerDragEnabled(true);
 
-        mPressureChart.setVisibleXRangeMaximum(X_RANGE);
-        mPressureChart.setVisibleXRangeMinimum(X_RANGE);
-
         // if disabled, scaling can be done on x- and y-axis separately
         mPressureChart.setPinchZoom(true);
 
@@ -542,19 +540,21 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
         mPressureChart.animateX(2500);
 
+        mPressureChart.setViewPortOffsets(40, 15, 15, 40);
+
         // get the legend (only possible after setting data)
         Legend legend = mPressureChart.getLegend();
-        //legend.setEnabled(false);
+        legend.setEnabled(false);
 
         // modify the legend ...
         //legend.setForm(Legend.LegendForm.LINE);
-        legend.setTypeface(mTfLight);
-        legend.setTextSize(14f);
+        //legend.setTypeface(mTfLight);
+        //legend.setTextSize(14f);
         //legend.setTextColor(Color.WHITE);
-        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
-        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
-        legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
-        legend.setDrawInside(false);
+        //legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        //legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        //legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        //legend.setDrawInside(false);
 
         XAxis xAxis = mPressureChart.getXAxis();
         xAxis.setTypeface(mTfLight);
@@ -562,17 +562,22 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         xAxis.setTextColor(Color.BLACK);
         xAxis.setDrawGridLines(true);
         xAxis.setDrawAxisLine(true);
-        xAxis.setDrawLabels(true);
-        xAxis.setLabelCount(X_RANGE);
+        xAxis.setLabelCount(12);
+//        xAxis.setValueFormatter(new IAxisValueFormatter() {
+//            @Override
+//            public String getFormattedValue(float value, AxisBase axis) {
+//                return new SimpleDateFormat("HH:mm").format(new Date());
+//            }
+//        });
 
         YAxis leftAxis = mPressureChart.getAxisLeft();
         leftAxis.setTypeface(mTfLight);
         leftAxis.setTextSize(15f);
         leftAxis.setAxisMinimum(0f);
+        //leftAxis.setValueFormatter(new PressureValueFormatter());
         leftAxis.setTextColor(Color.BLACK);
         leftAxis.setDrawGridLines(true);
-        leftAxis.setGranularityEnabled(true);
-        leftAxis.setDrawLabels(true);
+        //leftAxis.setGranularityEnabled(true);
 
         YAxis rightAxis = mPressureChart.getAxisRight();
         rightAxis.setDrawZeroLine(false);
@@ -594,13 +599,12 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
             pressureDataset.setAxisDependency(YAxis.AxisDependency.LEFT);
             pressureDataset.setColor(Color.RED);
-            //pressureDataset.setCircleColor(Color.WHITE);
             pressureDataset.setLineWidth(3f);
             pressureDataset.setCircleRadius(1f);
             pressureDataset.setFillAlpha(65);
-            //pressureDataset.setFillColor(ColorTemplate.getHoloBlue());
             pressureDataset.setHighLightColor(Color.rgb(244, 117, 117));
             pressureDataset.setDrawCircleHole(false);
+            pressureDataset.setDrawValues(false);
 
             // create a data object with the datasets
             LineData data = new LineData(pressureDataset);
@@ -611,9 +615,9 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
             mPressureChart.setData(data);
         }
 
-        if (time > X_RANGE) {
-            mPressureChart.moveViewToX(time - X_RANGE);
-        }
+        // this automatically refreshes the chart (calls invalidate())
+        mPressureChart.setVisibleXRangeMaximum(X_RANGE);
+        mPressureChart.moveViewToX((float)(time - X_RANGE));
     }
 
     private void setData(String value) {
@@ -638,10 +642,10 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                 //mPressureValueLatest = (float) (Math.random() * 30);
                 //mMessagePressure = "1 123 p " + mPressureValueLatest;
 
-                SendHttpRequestTask task = new SendHttpRequestTask();
+                //SendHttpRequestTask task = new SendHttpRequestTask();
 
-                String[] params = new String[]{urlServer, value};
-                task.execute(params);
+                //String[] params = new String[]{urlServer, value};
+                //task.execute(params);
             }
         }
     }
