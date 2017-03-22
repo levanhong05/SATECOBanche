@@ -1,5 +1,6 @@
 package com.dfm.honglv.satecobanche.main;
 
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -12,7 +13,6 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.MediaScannerConnection;
-import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -34,23 +34,27 @@ import com.dfm.honglv.satecobanche.R;
 
 import com.dfm.honglv.satecobanche.databases.DataDetails;
 import com.dfm.honglv.satecobanche.databases.DatabaseHelper;
-import com.dfm.honglv.satecobanche.functions.ConnectivityChangeReceiver;
 import com.dfm.honglv.satecobanche.functions.SaveFileActivity;
 import com.dfm.honglv.satecobanche.functions.TimeConversion;
 import com.dfm.honglv.satecobanche.navigation.InformationActivity;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.table.TableUtils;
 
 import java.io.File;
@@ -66,11 +70,15 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static com.dfm.honglv.satecobanche.functions.TimeConversion.dateToTimestamp;
+import static com.dfm.honglv.satecobanche.functions.TimeConversion.timestampToDate;
 
 public class MainActivity extends AppCompatActivity implements OnChartValueSelectedListener {
     private static String H_DISTANCE = "dh";
@@ -81,7 +89,12 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
     private static String PRESSURE = "p";
 
-    private static int X_RANGE = 500;
+    private static int X_RANGE = 100;
+
+    public static final int PRESSURE_CHART_INVALIDATE = 1;
+    public static final int PRESSURE_VALUE_CHANGE = 2;
+
+    Date today;
 
     //private String urlServer = "http://192.168.1.1/sateco_server/test_server";
 
@@ -101,6 +114,8 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
     protected Typeface mTfLight;
 
     boolean paused = false;
+
+    private Handler mThreadHandler;
 
     // Reference of DatabaseHelper class to access its DAOs and other components
     private DatabaseHelper databaseHelper = null;
@@ -152,10 +167,10 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                     mActivity.get().setData(data);
                     break;
                 case USBService.CTS_CHANGE:
-                    Toast.makeText(mActivity.get(), "CTS_CHANGE", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(mActivity.get(), "CTS_CHANGE", Toast.LENGTH_LONG).show();
                     break;
                 case USBService.DSR_CHANGE:
-                    Toast.makeText(mActivity.get(), "DSR_CHANGE", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(mActivity.get(), "DSR_CHANGE", Toast.LENGTH_LONG).show();
                     break;
                 case USBService.SYNC_READ:
                     String buffer = (String) msg.obj;
@@ -195,6 +210,8 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
         mHandler = new USBHandler(this);
 
+        today = new Date();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -226,9 +243,29 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
         mTabHost.setCurrentTab(0);
 
+        mThreadHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case PRESSURE_CHART_INVALIDATE:
+                        mPressureChart.notifyDataSetChanged();
+                        mPressureChart.invalidate();
+                        break;
+
+                    case PRESSURE_VALUE_CHANGE:
+                        mPressureValue.setText((String) msg.obj);
+                        break;
+                }
+            }
+        };
+
         setupCharts();
 
-        readData();
+        //readData();
+
+        //start thread
+        ReadThread thread = new ReadThread();
+        thread.start();
 
         final Handler handler = new Handler();
         Timer timer = new Timer(true);
@@ -241,6 +278,9 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                         if (!paused) {
                             mTime++;
 
+                            mPressureValueLatest = (float) (Math.random() * 30);
+                            mMessagePressure = "222864131214757024 123 p " + mPressureValueLatest;
+
                             mPressureValue.setText("" + mPressureValueLatest);
                             setData(mTime, mPressureValueLatest);
 
@@ -249,8 +289,8 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                             if (!mMessagePressure.isEmpty()) {
                                 final DataDetails dataDetails = new DataDetails();
                                 // Then, set all the values from user input
-                                dataDetails.addedDate = TimeConversion.dateToTimestamp(new Date());
-                                dataDetails.sensorId = Integer.parseInt(mMessagePressure.split(" ")[0]);
+                                dataDetails.addedDate = dateToTimestamp(new Date());
+                                dataDetails.sensorId = Long.parseLong(mMessagePressure.split(" ")[0]);
                                 dataDetails.key = PRESSURE;
                                 dataDetails.value = mPressureValueLatest;
 
@@ -271,6 +311,74 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         };
 
         timer.schedule(timerTask, 5000, 5000);
+    }
+
+    private class ReadThread extends Thread implements Runnable {
+        @Override
+        public void run() {
+            mPressureChart.clear();
+            pressureDataset.clear();
+            pressureValue.clear();
+
+            setData(0, 0);
+            mPressureChart.invalidate();
+
+            try {
+                // Declaration of DAO to interact with corresponding table
+                Dao<DataDetails, Integer> dataDao = getHelper().getDataDao();
+
+                // Get our query builder from the DAO
+                final QueryBuilder<DataDetails, Integer> queryBuilder = dataDao.queryBuilder();
+
+                // We need only Banche which are associated with the selected Construction, so build the query by "Where" clause
+                queryBuilder.where().eq(DataDetails.KEY_FIELD, PRESSURE);
+
+                // Prepare our SQL statement
+                final PreparedQuery<DataDetails> preparedQuery = queryBuilder.prepare();
+
+                // Fetch the list from Database by querying it
+                final Iterator<DataDetails> dataIt = dataDao.query(preparedQuery).iterator();
+
+                boolean isFirst = true;
+
+                long days = (new Date()).getTime() / 1000 - 28800;
+
+                Log.i("ReadData", "" + days);
+
+                float value = 0;
+
+                // Iterate through the DataDetails object iterator and populate the comma separated String
+                while (dataIt.hasNext()) {
+                    final DataDetails data = dataIt.next();
+                    //if (data.key.equals(PRESSURE)) {
+                        if (isFirst) {
+                            today = timestampToDate((long)(data.addedDate));
+                            isFirst = false;
+                        }
+
+                        if (data.addedDate > days) {
+                            setData(data.dataId, data.value);
+                            mTime = data.dataId;
+
+                            //mPressureChart.notifyDataSetChanged();
+                            //mPressureChart.invalidate();
+                            mThreadHandler.obtainMessage(PRESSURE_CHART_INVALIDATE);
+
+                            value = data.value;
+                        } else {
+                            //delete elements from table in field
+                            dataDao.delete(data);
+                        }
+                    //}
+                }
+
+                mThreadHandler.obtainMessage(PRESSURE_VALUE_CHANGE, "" + value);
+
+                //today = new Date();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -294,28 +402,8 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                         .setMessage(getString(R.string.message_clear_data))
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                try {
-                                    Dao<DataDetails, Integer> dataDao = getHelper().getDataDao();
-                                    // continue with delete
-                                    TableUtils.dropTable(dataDao, true);
-                                    TableUtils.createTable(dataDao);
-
-                                    mPressureValueLatest = 0;
-                                    mMessagePressure = "";
-
-                                    mPressureChart.clear();
-                                    pressureDataset.clear();
-                                    pressureValue.clear();
-
-                                    mTime = 0;
-
-                                    setData(0, 0);
-
-                                    mPressureChart.notifyDataSetChanged();
-                                    mPressureChart.invalidate();
-                                } catch (SQLException e) {
-                                    Toast.makeText(getApplicationContext(), getString(R.string.unable_clear_database), Toast.LENGTH_LONG).show();
-                                }
+                                ClearDatabaseThread thread = new ClearDatabaseThread();
+                                thread.start();
                             }
                         })
                         .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -335,6 +423,35 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         }
 
         return true;
+    }
+
+    private class ClearDatabaseThread extends Thread implements Runnable {
+        @Override
+        public void run() {
+            try {
+                Dao<DataDetails, Integer> dataDao = getHelper().getDataDao();
+                // continue with delete
+                TableUtils.dropTable(dataDao, true);
+                TableUtils.createTable(dataDao);
+
+                mPressureValueLatest = 0;
+                mMessagePressure = "";
+
+                mPressureChart.clear();
+                pressureDataset.clear();
+                pressureValue.clear();
+
+                mTime = 0;
+
+                setData(0, 0);
+
+                today = new Date();
+
+                mThreadHandler.obtainMessage(PRESSURE_CHART_INVALIDATE);
+            } catch (SQLException e) {
+                Toast.makeText(getApplicationContext(), getString(R.string.unable_clear_database), Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     @Override
@@ -392,53 +509,6 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         }
 
         return databaseHelper;
-    }
-
-    private void readData() {
-        mPressureChart.clear();
-        pressureDataset.clear();
-        pressureValue.clear();
-
-        setData(0, 0);
-        mPressureChart.invalidate();
-
-        try {
-            // Declaration of DAO to interact with corresponding table
-            Dao<DataDetails, Integer> dataDao = getHelper().getDataDao();
-
-            // Query the database. We need all the records so, used queryForAll()
-            // It holds the list of ConstructionDetails object fetched from Database
-            List<DataDetails> dataList = dataDao.queryForAll();
-
-            for (DataDetails data : dataList) {
-                if (data.key.equals(PRESSURE) && diffDate(data.addedDate) == 0) {
-                    setData(data.dataId, data.value);
-                    mTime = data.dataId;
-
-                    mPressureChart.notifyDataSetChanged();
-                    mPressureChart.invalidate();
-                }
-            }
-
-            if (dataList.size() > 0) {
-                mPressureValue.setText("" + dataList.get(dataList.size() - 1).value);
-            }
-
-            mPressureChart.invalidate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private int diffDate(int timestamp) {
-        Date now = new Date();
-
-        //seconds
-        long different = now.getTime() / 1000 - timestamp;
-
-        int elapsedDays = (int) (different / 86400);
-
-        return elapsedDays;
     }
 
     private void startService(Class<?> service, ServiceConnection serviceConnection, Bundle extras) {
@@ -501,8 +571,8 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
         //paused = true;
 
-        //unregisterReceiver(mUsbReceiver);
-        //unbindService(usbConnection);
+        unregisterReceiver(mUsbReceiver);
+        unbindService(usbConnection);
 
         //unregisterReceiver(mNetworkReceiver);
     }
@@ -540,7 +610,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
         mPressureChart.animateX(2500);
 
-        mPressureChart.setViewPortOffsets(40, 15, 15, 40);
+        mPressureChart.setViewPortOffsets(60, 15, 15, 40);
 
         // get the legend (only possible after setting data)
         Legend legend = mPressureChart.getLegend();
@@ -563,10 +633,15 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         xAxis.setDrawGridLines(true);
         xAxis.setDrawAxisLine(true);
         xAxis.setLabelCount(12);
+        //xAxis.setCenterAxisLabels(true);
+        xAxis.setGranularity(1f); // one hour
 //        xAxis.setValueFormatter(new IAxisValueFormatter() {
+//            private SimpleDateFormat mFormat = new SimpleDateFormat("HH:mm:ss");
+//
 //            @Override
 //            public String getFormattedValue(float value, AxisBase axis) {
-//                return new SimpleDateFormat("HH:mm").format(new Date());
+//                long millis = today.getTime() + (long)((value * 5) * 1000);
+//                return mFormat.format(new Date(millis));
 //            }
 //        });
 
@@ -574,10 +649,8 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         leftAxis.setTypeface(mTfLight);
         leftAxis.setTextSize(15f);
         leftAxis.setAxisMinimum(0f);
-        //leftAxis.setValueFormatter(new PressureValueFormatter());
         leftAxis.setTextColor(Color.BLACK);
         leftAxis.setDrawGridLines(true);
-        //leftAxis.setGranularityEnabled(true);
 
         YAxis rightAxis = mPressureChart.getAxisRight();
         rightAxis.setDrawZeroLine(false);

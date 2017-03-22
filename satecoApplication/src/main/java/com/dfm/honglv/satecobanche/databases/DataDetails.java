@@ -19,6 +19,7 @@ public class DataDetails implements Serializable {
 
     public static final String ID_FIELD = "data_id";
     public static final String CHIP_ID_FIELD = "sensor_id";
+    public static final String KEY_FIELD = "key";
 
     // Primary key defined as an auto generated integer
     // If the database table column name differs than the Model class variable name, the way to map to use columnName
@@ -29,7 +30,7 @@ public class DataDetails implements Serializable {
     public int addedDate;
 
     @DatabaseField(columnName = "sensor_id")
-    public int sensorId;
+    public long sensorId;
 
     @DatabaseField(columnName = "key")
     public String key;

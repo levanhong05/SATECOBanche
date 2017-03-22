@@ -5,13 +5,13 @@
     <string name="title_activity_save_file">Enregistrer le fichier</string>
 
     <string name="label_save_file_name">Nom de fichier</string>
-    <string name="dialog_hint_file_name">Entrez le nom de fichier</string>
+    <string name="dialog_hint_file_name">Entrer le nom de fichier</string>
     <string name="extension_filter_hint">Filtre d\'extension</string>
 
-    <string name="error_invalid_file_name">Nom de fichier non valide.</string>
+    <string name="error_invalid_file_name">Nom de fichier non validé.</string>
     <string name="error_empty_field">Ce champ est obligatoire.</string>
 
-    <string name="extension_filter_csv">CSV fichier (*.csv)</string>
+    <string name="extension_filter_csv">Fichier CSV (*.csv)</string>
 
     <string name="button_ok">OK</string>
     <string name="button_cancel">Annuler</string>
@@ -34,11 +34,7 @@
     <string name="message_clear_data">Voulez-vous vraiment effacer toutes les données?</string>
     <string name="unable_clear_database">Impossible d\'effacer les bases de données</string>
 
-    <string name="action_export_data">Exporter des données</string>
-
-    <string name="action_add_construction">Ajouter une nouvelle construction</string>
-    <string name="action_add_formwork">Ajouter un nouveau coffrage</string>
-    <string name="action_add_chip">Ajouter un nouveau capteur</string>
+    <string name="action_export_data">Exporter les données</string>
 
     <string name="heightlabel">Hauteur</string>
     <string name="heightvalue">0</string>
@@ -66,11 +62,11 @@
     <string name="tabangle">Inclinomètre</string>
     <string name="tabpressure">Capteur de pression</string>
 
-    <string name="usb_ready">USB prêt.</string>
-    <string name="usb_permission_not_granted">Permission USB non accordée.</string>
-    <string name="no_usb_connected">Non USB connecté.</string>
-    <string name="usb_disconnected">USB déconnecté.</string>
-    <string name="usb_device_not_supported">Périphérique USB non pris en charge.</string>
+    <string name="usb_ready">Clé USB prête.</string>
+    <string name="usb_permission_not_granted">Permission de clé USB non-accordée.</string>
+    <string name="no_usb_connected">Clé USB non-connectée.</string>
+    <string name="usb_disconnected">Clé USB déconnectée.</string>
+    <string name="usb_device_not_supported">Périphérique de clé USB non pris en charge.</string>
 
     <string name="found_wifi_network">Réseau wifi trouvé.</string>
     <string name="found_mobile_internet_network">Réseau mobile trouvé.</string>
@@ -79,7 +75,6 @@
     <string name="navigation_drawer_open">Ouvrir le tiroir de navigation</string>
     <string name="navigation_drawer_close">Fermer le tiroir de navigation</string>
 
-    <string name="nav_desciption">dfm-engineering.com</string>
     <string name="nav_img_desciption">Image description</string>
     <string name="splash_image_description">Splash image description</string>
     <string name="title_activity_settings">Paramètres</string>

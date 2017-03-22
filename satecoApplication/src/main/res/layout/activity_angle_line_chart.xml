@@ -4,49 +4,52 @@
     android:id="@+id/activity_angle_line_chart"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="0dp"
+    android:paddingLeft="0dp"
+    android:paddingRight="0dp"
+    android:paddingTop="0dp"
     tools:context="com.dfm.honglv.satecobanche.widgets.AngleLineChartActivity">
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chartAngle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/niveaulabel" />
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/aplomblabel" />
 
     <TextView
         android:id="@+id/aplomblabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentBottom="false"
         android:layout_alignParentStart="true"
         android:text="@string/aplomblabel"
         android:layout_marginBottom="15dp"
         android:layout_marginRight="10dp"
         android:gravity="right"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:paddingBottom="15dp" />
+        android:paddingBottom="15dp"
+        android:layout_below="@+id/niveaulabel" />
 
     <TextView
         android:id="@+id/aplombunit"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentBottom="false"
         android:layout_alignParentEnd="true"
         android:text="@string/aplombunit"
         android:layout_marginBottom="15dp"
         android:layout_marginRight="10dp"
         android:gravity="right"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:paddingBottom="15dp" />
+        android:paddingBottom="15dp"
+        android:layout_below="@+id/niveauunit" />
 
     <EditText
         android:id="@+id/aplombvalue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentBottom="false"
         android:inputType="numberDecimal"
         android:enabled="false"
         android:text="@string/aplombvalue"
@@ -56,39 +59,39 @@
         android:gravity="right"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_toLeftOf="@+id/aplombunit"
-        android:layout_toRightOf="@+id/aplomblabel" />
+        android:layout_toRightOf="@+id/aplomblabel"
+        android:layout_below="@+id/niveauvalue" />
 
     <TextView
         android:id="@+id/niveaulabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/aplomblabel"
         android:layout_alignParentStart="true"
         android:text="@string/niveaulabel"
         android:layout_marginBottom="15dp"
         android:layout_marginRight="10dp"
         android:gravity="right"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:paddingBottom="15dp" />
+        android:paddingBottom="15dp"
+        android:layout_alignParentTop="true" />
 
     <TextView
         android:id="@+id/niveauunit"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/aplombunit"
         android:layout_alignParentEnd="true"
         android:text="@string/niveauunit"
         android:layout_marginBottom="15dp"
         android:layout_marginEnd="10dp"
         android:gravity="right"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:paddingBottom="15dp" />
+        android:paddingBottom="15dp"
+        android:layout_alignParentTop="true" />
 
     <EditText
         android:id="@+id/niveauvalue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/aplombvalue"
         android:inputType="numberDecimal"
         android:enabled="false"
         android:text="@string/niveauvalue"
@@ -98,6 +101,7 @@
         android:gravity="right"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_toLeftOf="@+id/niveauunit"
-        android:layout_toRightOf="@+id/niveaulabel" />
+        android:layout_toRightOf="@+id/niveaulabel"
+        android:layout_alignParentTop="true" />
 
 </RelativeLayout>
