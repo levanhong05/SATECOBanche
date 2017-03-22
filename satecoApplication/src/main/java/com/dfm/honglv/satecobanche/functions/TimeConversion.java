@@ -7,8 +7,8 @@ import java.util.Date;
  */
 
 public class TimeConversion {
-    public static int dateToTimestamp(Date time) {
-        return (int)(time.getTime() / 1000);
+    public static long dateToTimestamp(Date time) {
+        return (time.getTime() / 1000);
     }
 
     public static Date timestampToDate(long timestamp) {

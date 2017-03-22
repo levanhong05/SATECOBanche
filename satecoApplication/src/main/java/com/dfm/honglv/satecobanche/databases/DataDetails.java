@@ -24,10 +24,10 @@ public class DataDetails implements Serializable {
     // Primary key defined as an auto generated integer
     // If the database table column name differs than the Model class variable name, the way to map to use columnName
     @DatabaseField(generatedId = true, columnName = ID_FIELD)
-    public int dataId;
+    public long dataId;
 
     @DatabaseField(columnName = "added_date")
-    public int addedDate;
+    public long addedDate;
 
     @DatabaseField(columnName = "sensor_id")
     public long sensorId;

@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
     LineDataSet pressureDataset;
     ArrayList<Entry> pressureValue;
 
-    private int mTime = 0;
+    private long mTime = 0;
     private float mPressureValueLatest = 0;
     private String mMessagePressure = "";
 
@@ -658,7 +658,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         mPressureChart.getAxisRight().setEnabled(false);
     }
 
-    private void setData(int time, float value) {
+    private void setData(long time, float value) {
         pressureValue.add(new Entry(time, value));
 
         if (mPressureChart.getData() != null && mPressureChart.getData().getDataSetCount() > 0) {
