@@ -333,9 +333,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                     public void run() {
                         try {
                             long days = (new Date()).getTime() / 1000 - TIMESTAMP_DELETE;
-
-                            Log.i("ReadData", "" + days);
-
+                            
                             // Declaration of DAO to interact with corresponding table
                             Dao<DataDetails, Integer> dataDao = getHelper().getDataDao();
 
