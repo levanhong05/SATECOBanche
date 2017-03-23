@@ -21,7 +21,7 @@
     <string name="export_data_successful">Export des données réussies.</string>
     <string name="export_no_data">Pas de données disponibles.</string>
 
-    <string name="pressure_x_axis">Temps</string>
+    <string name="pressure_x_axis">Temps (minutes)</string>
     <string name="pressure_y_axis">Pression (Tf)</string>
 
     <string name="version">Version</string>

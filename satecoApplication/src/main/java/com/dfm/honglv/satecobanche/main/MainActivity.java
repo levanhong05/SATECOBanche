@@ -93,6 +93,8 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
     public static final int PRESSURE_CHART_INVALIDATE = 1;
     public static final int PRESSURE_VALUE_CHANGE = 2;
+    public static final int SCAN_FILE = 3;
+    public static final int PRESSURE_CHART_CLEAR_DATA = 4;
 
     Date today;
 
@@ -255,6 +257,17 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                     case PRESSURE_VALUE_CHANGE:
                         mPressureValue.setText((String) msg.obj);
                         break;
+
+                    case SCAN_FILE:
+                        MediaScannerConnection.scanFile(getApplicationContext(), new String[]{(String) msg.obj}, null, null);
+
+                        break;
+
+                    case PRESSURE_CHART_CLEAR_DATA:
+                        mPressureChart.clear();
+                        pressureDataset.clear();
+                        pressureValue.clear();
+                        break;
                 }
             }
         };
@@ -278,8 +291,8 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                         if (!paused) {
                             mTime++;
 
-                            mPressureValueLatest = (float) (Math.random() * 30);
-                            mMessagePressure = "222864131214757024 123 p " + mPressureValueLatest;
+                            //mPressureValueLatest = (float) (Math.random() * 30);
+                            //mMessagePressure = "222864131214757024 123 p " + mPressureValueLatest;
 
                             mPressureValue.setText("" + mPressureValueLatest);
                             setData(mTime, mPressureValueLatest);
@@ -329,6 +342,11 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
                 // Get our query builder from the DAO
                 final QueryBuilder<DataDetails, Integer> queryBuilder = dataDao.queryBuilder();
+
+                long numRows = dataDao.countOf();
+
+                queryBuilder.offset(numRows - (long)X_RANGE * 3).limit((long)X_RANGE * 3);
+                queryBuilder.orderBy(DataDetails.ID_FIELD, true);  // true for ascending, false for descending
 
                 // We need only Banche which are associated with the selected Construction, so build the query by "Where" clause
                 queryBuilder.where().eq(DataDetails.KEY_FIELD, PRESSURE);
@@ -402,8 +420,30 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                         .setMessage(getString(R.string.message_clear_data))
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                ClearDatabaseThread thread = new ClearDatabaseThread();
-                                thread.start();
+                                try {
+                                    Dao<DataDetails, Integer> dataDao = getHelper().getDataDao();
+                                    // continue with delete
+                                    TableUtils.dropTable(dataDao, true);
+                                    TableUtils.createTable(dataDao);
+
+                                    mPressureValueLatest = 0;
+                                    mMessagePressure = "";
+
+                                    mPressureChart.clear();
+                                    pressureDataset.clear();
+                                    pressureValue.clear();
+
+                                    mTime = 0;
+
+                                    setData(0, 0);
+
+                                    today = new Date();
+
+                                    mPressureChart.notifyDataSetChanged();
+                                    mPressureChart.invalidate();
+                                } catch (SQLException e) {
+                                    Toast.makeText(getApplicationContext(), getString(R.string.unable_clear_database), Toast.LENGTH_LONG).show();
+                                }
                             }
                         })
                         .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -437,9 +477,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                 mPressureValueLatest = 0;
                 mMessagePressure = "";
 
-                mPressureChart.clear();
-                pressureDataset.clear();
-                pressureValue.clear();
+                mThreadHandler.obtainMessage(PRESSURE_CHART_CLEAR_DATA);
 
                 mTime = 0;
 
@@ -469,36 +507,50 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
                         fileName += ".csv";
                     }
 
-                    try {
-                        if (pressureValue.size() > 0) {
-                            File file = new File(fileName);
-                            FileOutputStream outFile = new FileOutputStream(file);
-                            OutputStreamWriter out = new OutputStreamWriter(outFile);
+                    if (pressureValue.size() > 0) {
+                        SaveCSVThread thread = new SaveCSVThread(fileName);
+                        thread.start();
 
-                            out.append(getString(R.string.export_data_time)  + "          " + getString(R.string.export_data_pressure) + "\n");
-
-                            for (Entry e : pressureValue) {
-                                out.append(((int)(e.getX()) + "          " + e.getY() + "\n"));
-                            }
-
-                            out.flush();
-                            out.close();
-                            outFile.close();
-
-                            MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, null);
-
-                            Toast.makeText(getApplicationContext(), getString(R.string.export_data_successful), Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(getApplicationContext(), getString(R.string.export_no_data), Toast.LENGTH_LONG).show();
-                        }
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        Toast.makeText(getApplicationContext(), getString(R.string.export_data_successful), Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), getString(R.string.export_no_data), Toast.LENGTH_LONG).show();
                     }
                 }
 
                 break;
+        }
+    }
+
+    private class SaveCSVThread extends Thread implements Runnable {
+        String fileName;
+
+        SaveCSVThread(String path) {
+            this.fileName = path;
+        }
+
+        @Override
+        public void run() {
+            try {
+                File file = new File(fileName);
+                FileOutputStream outFile = new FileOutputStream(file);
+                OutputStreamWriter out = new OutputStreamWriter(outFile);
+
+                out.append(getString(R.string.export_data_time)  + "          " + getString(R.string.export_data_pressure) + "\n");
+
+                for (Entry e : pressureValue) {
+                    out.append(((int)(e.getX()) + "          " + e.getY() + "\n"));
+                }
+
+                out.flush();
+                out.close();
+                outFile.close();
+
+                mThreadHandler.obtainMessage(SCAN_FILE, file.getAbsolutePath());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -633,17 +685,15 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         xAxis.setDrawGridLines(true);
         xAxis.setDrawAxisLine(true);
         xAxis.setLabelCount(12);
-        //xAxis.setCenterAxisLabels(true);
-        xAxis.setGranularity(1f); // one hour
-//        xAxis.setValueFormatter(new IAxisValueFormatter() {
-//            private SimpleDateFormat mFormat = new SimpleDateFormat("HH:mm:ss");
-//
-//            @Override
-//            public String getFormattedValue(float value, AxisBase axis) {
-//                long millis = today.getTime() + (long)((value * 5) * 1000);
-//                return mFormat.format(new Date(millis));
-//            }
-//        });
+        xAxis.setCenterAxisLabels(true);
+        xAxis.setGranularity(12f); // one minutes
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                long millis = (long)(value / 12);
+                return "" + millis;
+            }
+        });
 
         YAxis leftAxis = mPressureChart.getAxisLeft();
         leftAxis.setTypeface(mTfLight);
