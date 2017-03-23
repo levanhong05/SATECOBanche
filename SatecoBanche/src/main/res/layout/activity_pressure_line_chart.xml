@@ -8,7 +8,7 @@
     android:paddingLeft="0dp"
     android:paddingRight="0dp"
     android:paddingTop="0dp"
-    tools:context="eu.dfm.satecobanche.widgets.PressureLineChartActivity">
+    tools:context="com.dfm.europe.satecobanche.widgets.PressureLineChartActivity">
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chartPressure"
@@ -68,7 +68,7 @@
         android:layout_alignParentBottom="false"
         android:layout_alignParentTop="true" />
 
-    <eu.dfm.satecobanche.functions.VerticalTextView
+    <com.dfm.europe.satecobanche.functions.VerticalTextView
         android:text="@string/pressure_y_axis"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

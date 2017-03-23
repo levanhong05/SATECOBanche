@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="eu.dfm.satecobanche">
+    package="com.dfm.europe.satecobanche">
 
     <uses-sdk android:minSdkVersion="14" />
 
@@ -34,7 +34,7 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" >
             <intent-filter>
-                <action android:name="eu.dfm.satecobanche.main.MainActivity" />
+                <action android:name="com.dfm.europe.satecobanche.main.MainActivity" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
 
                 <category android:name="android.intent.category.DEFAULT" />

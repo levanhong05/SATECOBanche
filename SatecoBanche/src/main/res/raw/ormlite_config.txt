@@ -1,6 +1,6 @@
 #################################
 # --table-start--
-dataClass=eu.dfm.satecobanche.databases.DataDetails
+dataClass=com.dfm.europe.satecobanche.databases.DataDetails
 tableName=data_details
 # --table-fields-start--
 # --field-start--
