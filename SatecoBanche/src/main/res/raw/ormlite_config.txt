@@ -1,0 +1,29 @@
+#################################
+# --table-start--
+dataClass=eu.dfm.satecobanche.databases.DataDetails
+tableName=data_details
+# --table-fields-start--
+# --field-start--
+fieldName=dataId
+columnName=data_id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=sensorId
+columnName=sensor_id
+# --field-end--
+# --field-start--
+fieldName=addedDate
+columnName=added_date
+# --field-end--
+# --field-start--
+fieldName=key
+columnName=key
+# --field-end--
+# --field-start--
+fieldName=value
+columnName=value
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################

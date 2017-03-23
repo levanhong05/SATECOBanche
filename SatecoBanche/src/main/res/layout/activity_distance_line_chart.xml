@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_distance_line_chart"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="0dp"
+    android:paddingLeft="0dp"
+    android:paddingRight="0dp"
+    android:paddingTop="0dp"
+    tools:context="eu.dfm.satecobanche.widgets.DistanceLineChartActivity">
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/chartDistance"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/heightlabel" />
+
+    <TextView
+        android:id="@+id/heightlabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentStart="true"
+        android:text="@string/heightlabel"
+        android:layout_marginBottom="15dp"
+        android:layout_marginRight="10dp"
+        android:gravity="right"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:paddingBottom="15dp"
+        android:layout_below="@+id/thicknesslabel" />
+
+    <EditText
+        android:id="@+id/heightvalue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="false"
+        android:inputType="numberDecimal"
+        android:enabled="false"
+        android:text="@string/heightvalue"
+        android:textAlignment="center"
+        android:layout_marginBottom="15dp"
+        android:layout_marginRight="10dp"
+        android:gravity="right"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_toLeftOf="@+id/heightunit"
+        android:layout_toRightOf="@+id/heightlabel"
+        android:layout_centerVertical="false"
+        android:layout_centerHorizontal="false"
+        android:layout_below="@+id/thicknessvalue" />
+
+    <TextView
+        android:id="@+id/thicknesslabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:text="@string/thicknesslabel"
+        android:layout_marginBottom="15dp"
+        android:layout_marginRight="10dp"
+        android:gravity="right"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:paddingBottom="15dp"
+        android:layout_alignParentTop="true" />
+
+    <TextView
+        android:id="@+id/thicknessunit"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:text="@string/thicknessunit"
+        android:layout_marginBottom="15dp"
+        android:layout_marginRight="10dp"
+        android:gravity="right"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:paddingBottom="15dp"
+        android:layout_alignParentTop="true" />
+
+    <EditText
+        android:id="@+id/thicknessvalue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:enabled="false"
+        android:text="@string/thicknessvalue"
+        android:textAlignment="center"
+        android:layout_marginBottom="15dp"
+        android:layout_marginRight="10dp"
+        android:gravity="right"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_toLeftOf="@+id/thicknessunit"
+        android:layout_toRightOf="@+id/thicknesslabel"
+        android:layout_alignParentTop="true" />
+
+    <TextView
+        android:id="@+id/heightunit"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:text="@string/heightunit"
+        android:layout_marginRight="10dp"
+        android:gravity="right"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_alignBottom="@+id/heightvalue"
+        android:layout_alignStart="@+id/thicknessunit"
+        android:paddingBottom="15dp"
+        android:layout_below="@+id/thicknessunit" />
+
+</RelativeLayout>
