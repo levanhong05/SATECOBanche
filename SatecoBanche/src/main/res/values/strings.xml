@@ -68,8 +68,8 @@
     <string name="usb_disconnected">Clé USB déconnectée.</string>
     <string name="usb_device_not_supported">Périphérique de clé USB non pris en charge.</string>
 
-    <string name="found_wifi_network">Réseau wifi trouvé.</string>
-    <string name="found_mobile_internet_network">Réseau mobile trouvé.</string>
+    <string name="found_wifi_network">Réseau wifi disponibles.</string>
+    <string name="found_mobile_internet_network">Réseau mobile disponibles.</string>
     <string name="no_wifi_or_3g_enabled">Pas de wifi ou 3G activé.</string>
 
     <string name="navigation_drawer_open">Ouvrir le tiroir de navigation</string>
